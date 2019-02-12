@@ -24,9 +24,14 @@ const TrackerSchema = new Schema({
         default: false
     },
     history: {
-        type: [mongoose.Types.ObjectId],
+        type: [Schema.Types.ObjectId],
         ref: 'History',
         default: []
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: 'You need to specify who this tracker belongs to'
     }
 });
 

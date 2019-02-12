@@ -1,0 +1,81 @@
+{
+	"info": {
+		"_postman_id": "6780a63b-ddf1-4203-a256-2d65036490ef",
+		"name": "Licenta",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNjJlM2E4MDJjZjI4MTQ2MWIzMDhkMyIsInBlcm1pc3Npb25zIjpbIlVTRVIiXSwiaWF0IjoxNTQ5OTg5NTkyLCJleHAiOjE1NTAwNzU5OTJ9.1oa5Er6v8hX9uTXVm292wt7fdulWWYojLWNWAltGQxM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"martin@testus.com\",\n    \"password\": \"testpass\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/resource/user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"resource",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Log In",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"martin@testus.com\",\n    \"password\": \"testpass\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/public/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"public",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

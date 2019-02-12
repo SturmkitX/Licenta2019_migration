@@ -6,6 +6,7 @@ import {AuthController} from "./security/auth-controller";
 import {LogInRoutes} from "./routes/login-routes";
 import * as jwt from 'express-jwt';
 import {RoleRoutes} from "./routes/role-routes";
+import {TrackerRoutes} from "./routes/tracker-routes";
 
 export class App {
 
@@ -14,12 +15,14 @@ export class App {
     private readonly userRoutes: UserRoutes;
     private readonly logInRoutes: LogInRoutes;
     private readonly roleRoutes: RoleRoutes;
+    private readonly trackerRoutes: TrackerRoutes;
 
     constructor() {
         this.app = Express();
         this.userRoutes = new UserRoutes();
         this.logInRoutes = new LogInRoutes();
         this.roleRoutes = new RoleRoutes();
+        this.trackerRoutes = new TrackerRoutes();
         this.config();
         this.mongoSetup();
 
@@ -48,6 +51,7 @@ export class App {
         this.userRoutes.applyRoutes(this.app);
         this.logInRoutes.applyRoutes(this.app);
         this.roleRoutes.applyRoutes(this.app);
+        this.trackerRoutes.applyRoutes(this.app);
     }
 
     private setupMiddleWares() {

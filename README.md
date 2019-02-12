@@ -12,10 +12,13 @@
 -[X] JWT + Permissions integration
 -[ ] HTTPS (https://itnext.io/building-restful-web-apis-with-node-js-express-mongodb-and-typescript-part-5-a80e5a7f03db)
 -[ ] Email confirmation
+-[ ] Periodic job to process emails
+-[ ] Periodic job to process account deletions
 
+## CRUD Operations will be added as needed
 ### Admin
--[ ] User Operations (get all, insert, update, delete)
--[ ] Tracker Operations (get all, get specific device, insert, update, delete)
+-[X] User Operations (get all, get specific, insert)
+-[X] Tracker Operations (get all, get specific device, insert)
 -[ ] History Operations (get all, get for specific device, update, delete)
 
 ### Regular user (Client + Tracker)
@@ -31,3 +34,4 @@
 
 # Android
 -[ ] UI
+-[ ] Special messages when another user finds your LOST device (optional +1 rating system, as a RATING field in user, starting at 0)

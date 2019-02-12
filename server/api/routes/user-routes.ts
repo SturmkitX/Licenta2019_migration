@@ -13,16 +13,17 @@ export class UserRoutes {
     }
 
     public applyRoutes(app: Application): void {
+        // ADMIN routes
         app.route('/resource/user')
-            .get(this.guard.check('ADMIN'), this.controller.getAll);
+            .get(this.guard.check('ADMIN'), this.controller.getAll)
+            .post(this.guard.check('ADMIN'), this.controller.saveUser);
 
         app.route('/resource/user/:userId')
             .get(this.guard.check('ADMIN'), this.controller.getSpecificUser);
 
-        app.route('/resource/user/me')
-            .get(this.controller.getSelf);
 
-        app.route('/resource/user')
-            .post(this.guard.check('ADMIN'), this.controller.saveUser);
+        // USER + ADMIN routes
+        app.route('/resource/me/user')
+            .get(this.controller.getSelf);
     }
 }
