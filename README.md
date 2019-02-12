@@ -6,22 +6,28 @@
 
 3. (to see processes) docker ps [-a]
 
-# Left to do:
-1. https://itnext.io/building-restful-web-apis-with-node-js-express-mongodb-and-typescript-part-5-a80e5a7f03db (for HTTPS integration)
-2. https://medium.freecodecamp.org/securing-node-js-restful-apis-with-json-web-tokens-9f811a92bb52 (for JWT integration)
-
 # TODO list
 # Server
-[ ] User Controller (GET, POST, PUT, DELETE)
-[ ] Tracker Controller
-[ ] History Controller
-[ ] Security (HTTPS + JWT)
+-[X] MongoDB support
+-[X] JWT + Permissions integration
+-[ ] HTTPS (https://itnext.io/building-restful-web-apis-with-node-js-express-mongodb-and-typescript-part-5-a80e5a7f03db)
+-[ ] Email confirmation
+
+### Admin
+-[ ] User Operations (get all, insert, update, delete)
+-[ ] Tracker Operations (get all, get specific device, insert, update, delete)
+-[ ] History Operations (get all, get for specific device, update, delete)
+
+### Regular user (Client + Tracker)
+-[ ] User Operations (get own info, register, update own info, mark account for deletion)
+-[ ] Tracker Operations (get own tracker info, pair tracker, unpair tracker)
+-[ ] History Operations (get own history for a certain interval, insert)
 
 # Arduino
-[ ] Circuit
-[ ] JSON Feature
-[ ] ESP8266 communication
-[ ] Code
+-[ ] Circuit
+-[ ] JSON Feature
+-[ ] ESP8266 communication
+-[ ] Code
 
 # Android
-[ ] UI
+-[ ] UI

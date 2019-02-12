@@ -7,17 +7,36 @@ export class UserController{
     constructor() {}
 
     public getAll(req: Request, res: Response): void {
-        User.find({}, (err: any, users: Document[]) => {
+        // @ts-ignore
+        console.log(req.user);
+        User.find()
+            .populate('role')
+            .exec((err: any, users: Document[]) => {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(users);
+                }
+            });
+    }
+
+    public getSpecificUser(req: Request, res: Response): void {
+        User.findById(req.params.userId, (err: any, userDoc: Document) => {
+            const user: any = userDoc;
             if (err) {
                 res.status(500).send(err);
+            } else if (!user) {
+                res.status(404).json(null);
             } else {
-                res.status(200).json(users);
+                user.password = null;
+                res.status(200).json(user);
             }
         });
     }
 
-    public getUserMode(req: Request, res: Response): void {
-        User.findById(req.params.userId, (err: any, userDoc: Document) => {
+    public getSelf(req: Request, res: Response): void {
+        // @ts-ignore
+        User.findById(req.user.id, (err: any, userDoc: Document) => {
             const user: any = userDoc;
             if (err) {
                 res.status(500).send(err);

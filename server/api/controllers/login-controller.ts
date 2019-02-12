@@ -9,34 +9,31 @@ export class LogInController{
     constructor() {}
 
     public login(req: Request, res: Response): void {
-        User.findOne({email: req.body.email}, (err: any, user: Document) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                // check password
-                // @ts-ignore
-                bcrypt.compare(req.body.password, user.password)
-                    .then(value => {
-                        if (value) {
-                            // create a token
-                            // @ts-ignore
-                            const token = jwt.sign({ id: user._id }, AuthController.secret, {
-                                expiresIn: 86400 // expires in 24 hours
-                            });
-                            res.status(200).json({auth: true, message: 'Success'});
-                        } else {
-                            res.status(401).json({auth: false, message: 'Bad credentials'});
-                        }
-                    })
-                    .catch(reason => {
-                        res.status(401).send(reason);
-                    });
-            }
-        });
+        User.findOne({email: req.body.email})
+            .populate('role')
+            .exec((err: any, userDoc: Document) => {
+                const user: any = userDoc;
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    // check password
+                    const match = bcrypt.compareSync(req.body.password, user.password);
+                    if (match) {
+                        // sign token
+                        console.log(user.role);
+                        const token = jwt.sign({ id: user._id, permissions: [user.role.role] }, AuthController.secret, {
+                            expiresIn: 86400 // expires in 24 hours
+                        });
+
+                        res.status(200).json({auth: true, message: 'Success', token: token});
+                    } else {
+                        res.status(401).json({auth: false, message: 'Bad credentials'});
+                    }
+                }
+            });
     }
 
     public logout(req: Request, res: Response) {
-        // remains to be seen
-        res.status(405).json({auth: false, message: 'Not implemented yet!'});
+        res.status(200).json({auth: false, message: 'Successfully logged out!'});
     }
 }

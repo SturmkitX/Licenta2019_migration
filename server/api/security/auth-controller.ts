@@ -8,10 +8,12 @@ export class AuthController {
     constructor() {}
 
     public static verifyToken(req: Request, res: Response, next) {
-        console.log(req.url || 'Empty');
+        console.log(req.url || 'Empty URL');
         // don't verify token if the link is either /login or /logout
         if (req.url === '/login' || req.url === '/logout') {
+            console.log('LogIn / LogOut link accessed; not verifying token...');
             next();
+            return;
         }
 
         // @ts-ignore

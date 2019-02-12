@@ -4,6 +4,8 @@ import * as mongoose from 'mongoose';
 import {UserRoutes} from "./routes/user-routes";
 import {AuthController} from "./security/auth-controller";
 import {LogInRoutes} from "./routes/login-routes";
+import * as jwt from 'express-jwt';
+import {RoleRoutes} from "./routes/role-routes";
 
 export class App {
 
@@ -11,16 +13,18 @@ export class App {
     private readonly mongoUrl: string = 'mongodb://localhost/ProjectTracker';
     private readonly userRoutes: UserRoutes;
     private readonly logInRoutes: LogInRoutes;
+    private readonly roleRoutes: RoleRoutes;
 
     constructor() {
         this.app = Express();
         this.userRoutes = new UserRoutes();
         this.logInRoutes = new LogInRoutes();
+        this.roleRoutes = new RoleRoutes();
         this.config();
         this.mongoSetup();
 
         // middlewares must be declared before the routes
-        // this.setupMiddleWares();
+        this.setupMiddleWares();
 
 
         this.setupRoutes();
@@ -43,10 +47,37 @@ export class App {
     private setupRoutes(): void {
         this.userRoutes.applyRoutes(this.app);
         this.logInRoutes.applyRoutes(this.app);
+        this.roleRoutes.applyRoutes(this.app);
     }
 
     private setupMiddleWares() {
-        this.app.use(AuthController.verifyToken);
+        // this.app.use(AuthController.verifyToken);
+        this.app.use(
+            jwt({
+                secret: AuthController.secret,
+                getToken: req => {
+                    console.log(req.headers.authorization);
+                    if (!req.headers.authorization) {
+                        return null;
+                    }
+
+                    const words: string[] = req.headers.authorization.split(' ');
+                    if (words.length != 2) {
+                        // not the correct form
+                        return null;
+                    }
+
+                    if (words[0] !== 'Bearer') {
+                        // not the correct form of authentication
+                        return null;
+                    }
+
+                    return words[1];
+                }
+            }).unless({
+                path: ['/public/login', '/public/logout']
+            })
+        );
     }
 
     public getApp(): Express.Application {
