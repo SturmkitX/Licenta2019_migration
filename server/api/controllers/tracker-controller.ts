@@ -9,7 +9,6 @@ export class TrackerController{
 
     public getAll(req: Request, res: Response): void {
         Tracker.find()
-            .populate('user')
             .populate('history')
             .exec((err: any, trackers: Document[]) => {
                 if (err) {
@@ -50,12 +49,14 @@ export class TrackerController{
     /* USER + ADMIN methods */
     public getSelf(req: Request, res: Response): void {
         // @ts-ignore
-        Tracker.find({userId: req.user.id}, (err: any, trackers: Document[]) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.status(200).json(trackers);
-            }
-        });
+        Tracker.find({userId: req.user.id})
+            .populate('history')
+            .exec((err: any, trackers: Document[]) => {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(trackers);
+                }
+            });
     }
 }

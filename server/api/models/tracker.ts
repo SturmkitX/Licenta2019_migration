@@ -23,11 +23,11 @@ const TrackerSchema = new Schema({
         type: Boolean,
         default: false
     },
-    history: {
-        type: [Schema.Types.ObjectId],
+    history: [{
+        type: Schema.Types.ObjectId,
         ref: 'History',
         default: []
-    },
+    }],
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',

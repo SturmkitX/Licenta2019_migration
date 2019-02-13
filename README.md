@@ -19,7 +19,7 @@
 ### Admin
 -[X] User Operations (get all, get specific, insert)
 -[X] Tracker Operations (get all, get specific device, insert)
--[ ] History Operations (get all, get for specific device, update, delete)
+-[X] History Operations (get all, get for specific device)
 
 ### Regular user (Client + Tracker)
 -[ ] User Operations (get own info, register, update own info, mark account for deletion)

@@ -21,7 +21,7 @@ const HistorySchema = new Schema({
         default: Date.now
     },
     source: {
-        type: String
+        type: String    // leave it as a simple string for now
     }
 });
 

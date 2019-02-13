@@ -26,11 +26,11 @@ const UserSchema = new Schema({
         required: 'Role must be specified',
         default: new mongoose.Types.ObjectId('5c62e003d6ca8b1299d0799c')    // _id of USER role
     },
-    trackers: {
-        type: [Schema.Types.ObjectId],
+    trackers: [{
+        type: Schema.Types.ObjectId,
         ref: 'Tracker',
         default: []
-    }
+    }]
 });
 
 const User = mongoose.model('User', UserSchema);
