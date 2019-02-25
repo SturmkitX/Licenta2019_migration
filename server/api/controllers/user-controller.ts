@@ -12,7 +12,6 @@ export class UserController{
         // @ts-ignore
         console.log(req.user);
         User.find()
-            .populate('role')
             .exec((err: any, users: Document[]) => {
                 if (err) {
                     res.status(500).send(err);

@@ -10,7 +10,6 @@ export class LogInController{
 
     public login(req: Request, res: Response): void {
         User.findOne({email: req.body.email})
-            .populate('role')
             .exec((err: any, userDoc: Document) => {
                 const user: any = userDoc;
                 if (err) {
@@ -21,7 +20,7 @@ export class LogInController{
                     if (match) {
                         // sign token
                         console.log(user.role);
-                        const token = jwt.sign({ id: user._id, permissions: [user.role.role] }, AuthController.secret, {
+                        const token = jwt.sign({ id: user._id, permissions: [user.role] }, AuthController.secret, {
                             expiresIn: 86400 // expires in 24 hours
                         });
 

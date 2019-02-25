@@ -28,9 +28,12 @@
 
 # Arduino
 -[ ] Circuit
--[ ] JSON Feature
+-[ ] GPS support
 -[ ] ESP8266 communication
--[ ] Code
+-[ ] Enable GPS/WPS/Both
+-[ ] Wifi Autoconnect to public + predefined (taken from server) APs
+-[ ] Check settings before sending location
+-[ ] Hardcode credentials, RFID and server location
 
 # Android
 -[ ] UI

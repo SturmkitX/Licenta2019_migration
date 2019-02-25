@@ -1,6 +1,5 @@
 import {Application} from "express";
 import {LogInController} from "../controllers/login-controller";
-import * as guard from 'express-jwt-permissions';
 
 export class LogInRoutes {
 
