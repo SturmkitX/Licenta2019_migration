@@ -9,9 +9,11 @@ export class LogInController{
     constructor() {}
 
     public login(req: Request, res: Response): void {
+        console.log(req.body);
         User.findOne({email: req.body.email})
             .exec((err: any, userDoc: Document) => {
                 const user: any = userDoc;
+                console.log(user);
                 if (err) {
                     res.status(500).send(err);
                 } else {

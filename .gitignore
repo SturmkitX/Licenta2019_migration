@@ -2,4 +2,8 @@
 *.class
 node_modules/
 dist/
+bin/
+gen/
+*.apk
+obj/
 
