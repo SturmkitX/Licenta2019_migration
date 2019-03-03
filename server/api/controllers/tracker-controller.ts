@@ -1,5 +1,6 @@
 import { Tracker } from '../models/tracker';
 import { Request, Response } from 'express';
+import {User} from "../models/user";
 
 export class TrackerController{
 
@@ -36,10 +37,18 @@ export class TrackerController{
             res.status(400).json(null);
         }
 
-        const user = new Tracker(req.body).save((err, trackerSave) => {
+        new Tracker(req.body).save((err, trackerSave) => {
+            const tracker: any = trackerSave;
             if (err) {
                 res.status(500).send(err);
             } else {
+                User.findByIdAndUpdate(tracker.userId, {$push: {trackers: tracker._id}},
+                    (err, user) => {
+                        if (err) {
+                            res.status(500).send(err);
+                        }
+                    });
+
                 res.status(200).json(trackerSave);
             }
         });

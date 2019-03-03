@@ -1,4 +1,4 @@
-package models;
+package com.example.licentaproject.models;
 
 import java.io.Serializable;
 

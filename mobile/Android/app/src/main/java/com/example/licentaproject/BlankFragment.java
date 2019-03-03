@@ -1,24 +1,30 @@
 package com.example.licentaproject;
 
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.nfc.NfcAdapter;
-import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.licentaproject.models.Tracker;
+import com.example.licentaproject.utils.HttpRequestUtil;
+import com.example.licentaproject.utils.MyAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class BlankFragment extends Fragment {
 
-    private NfcAdapter adapter;
-    private PendingIntent pendingIntent;
-    private IntentFilter[] intentFilters;
-    private String[][] techList;
+    private List<Tracker> trackers;
+    private RecyclerView trackerView;
+    private MyAdapter adapter;
 
     public BlankFragment() {
         // Required empty public constructor
@@ -27,18 +33,8 @@ public class BlankFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.adapter = NfcAdapter.getDefaultAdapter(getActivity());
-        this.pendingIntent =
-                PendingIntent.getActivity(getActivity(), 0, new Intent(getActivity(), getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        try {
-            filter.addDataType("*/*");
-        } catch(IntentFilter.MalformedMimeTypeException e) {
-            e.printStackTrace();
-        }
-        this.intentFilters = new IntentFilter[] { filter };
-        this.techList = new String[][] { new String[] { NfcF.class.getName() } };
+        this.trackers = new ArrayList<>();
 
     }
 
@@ -46,21 +42,71 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blank, container, false);
-    }
+        View view =  inflater.inflate(R.layout.fragment_blank, container, false);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.adapter.disableForegroundDispatch(getActivity());
-        Log.d("PAUSE_NFC", "On Pause, tag is " + (adapter.isEnabled() ? "ON" : "OFF"));
+        // get NFC button
+        FloatingActionButton addBtn = (FloatingActionButton) view.findViewById(R.id.addTrackerBtn);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), TrackerAddActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        this.trackerView = (RecyclerView) view.findViewById(R.id.trackerView);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        this.trackerView.setLayoutManager(manager);
+
+        this.adapter = new MyAdapter(trackers);
+        trackerView.setAdapter(adapter);
+
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.adapter.enableForegroundDispatch(getActivity(), this.pendingIntent, null, null);
-        Log.d("RESUME_NFC", "On Resume, tag is " + (adapter.isEnabled() ? "ON" : "OFF"));
-        Log.d("FRAG_ACTIVITY", getClass().getSimpleName());
+
+        // get the updated list of trackers
+        new TrackerTask(trackers, adapter).execute();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    private class TrackerTask extends AsyncTask<Void, Void, List<Tracker>> {
+
+        private List<Tracker> origList;
+        private MyAdapter adapter;
+
+        public TrackerTask(List<Tracker> origList, MyAdapter adapter) {
+            this.origList = origList;
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected List<Tracker> doInBackground(Void... voids) {
+            return (List<Tracker>) HttpRequestUtil.sendRequest("resource/me/tracker", "GET", null, Tracker.class, true);
+        }
+
+        @Override
+        protected void onPostExecute(List<Tracker> trackers) {
+            // update the view
+            List<String> names = new ArrayList<>();
+            for (Tracker t : trackers) {
+                names.add(t.getName());
+            }
+
+            origList.clear();
+            origList.addAll(trackers);
+            adapter.notifyDataSetChanged();
+
+            Log.d("LIST_SIZE_ADAPTER", "" + adapter.getItemCount());
+            Log.d("LIST_SIZE_COLLECTION", "" + origList.size());
+        }
     }
 }

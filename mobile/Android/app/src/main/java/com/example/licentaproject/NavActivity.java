@@ -1,11 +1,8 @@
 package com.example.licentaproject;
 
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -13,7 +10,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
+
+import com.example.licentaproject.models.User;
+import com.example.licentaproject.utils.HttpRequestUtil;
+import com.example.licentaproject.utils.SessionData;
 
 public class NavActivity extends AppCompatActivity {
 
@@ -55,6 +55,8 @@ public class NavActivity extends AppCompatActivity {
 
         Tag tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Log.d("TAG_CREATE", "Tag is in onCreate: " + (tag == null ? "NO" : "YES"));
+
+        new UserRequestTask().execute();
     }
 
     @Override
@@ -67,9 +69,21 @@ public class NavActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        Log.d("Tag_ID", tag.toString());
+    private class UserRequestTask extends AsyncTask<Object, Void, User> {
+
+        @Override
+        protected User doInBackground(Object... params) {
+            return (User) HttpRequestUtil.sendRequest("resource/me/user", "GET", null, User.class, false);
+        }
+
+        protected void onPostExecute(User user) {
+            if (user == null) {
+                Log.d("AUTH_USER_DATA_STATUS", "User fetch error!");
+            } else {
+                Log.d("AUTH_USER_DATA_STATUS", "User fetch successful");
+                Log.d("USER_FETCH_ID", user.getId());
+                SessionData.setUser(user);
+            }
+        }
     }
 }

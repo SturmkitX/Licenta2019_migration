@@ -3,9 +3,13 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const TrackerSchema = new Schema({
-    rfId: {
-        type: String,
+    rfId: [{
+        type: Number,
         required: 'You need to associate an RFID'
+    }],
+    name: {
+        type: String,
+        default: ''
     },
     lost: {
         type: Boolean,
