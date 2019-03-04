@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="position_methods_array">
+        <item>WPS + GPS</item>
+        <item>WPS Only</item>
+        <item>GPS Only</item>
+        <item>None</item>
+    </string-array>
+</resources>

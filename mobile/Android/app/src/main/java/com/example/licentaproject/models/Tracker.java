@@ -1,11 +1,15 @@
 package com.example.licentaproject.models;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class Tracker {
+public class Tracker implements Parcelable {
 
     @JsonProperty(value = "_id")
     private String id;
@@ -14,15 +18,43 @@ public class Tracker {
     private boolean alarmActive;
     private boolean wifiActive;
     private boolean gpsActive;
+    private String preferredMethod;
     private List<Byte> rfId;
     private String userId;
 
     @JsonProperty(value = "__v")
     private int version;
+
+    @JsonIgnore
     private List<Object> history;
 
     public Tracker() {
     }
+
+    protected Tracker(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        lost = in.readByte() != 0;
+        alarmActive = in.readByte() != 0;
+        wifiActive = in.readByte() != 0;
+        gpsActive = in.readByte() != 0;
+        preferredMethod = in.readString();
+        userId = in.readString();
+        version = in.readInt();
+        rfId = (List<Byte>) in.readArrayList(Byte.class.getClassLoader());
+    }
+
+    public static final Creator<Tracker> CREATOR = new Creator<Tracker>() {
+        @Override
+        public Tracker createFromParcel(Parcel in) {
+            return new Tracker(in);
+        }
+
+        @Override
+        public Tracker[] newArray(int size) {
+            return new Tracker[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -102,5 +134,32 @@ public class Tracker {
 
     public void setHistory(List<Object> history) {
         this.history = history;
+    }
+
+    public String getPreferredMethod() {
+        return preferredMethod;
+    }
+
+    public void setPreferredMethod(String preferredMethod) {
+        this.preferredMethod = preferredMethod;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeByte((byte)(lost ? 1 : 0));
+        dest.writeByte((byte)(alarmActive ? 1 : 0));
+        dest.writeByte((byte)(wifiActive ? 1 : 0));
+        dest.writeByte((byte)(gpsActive ? 1 : 0));
+        dest.writeString(preferredMethod);
+        dest.writeString(userId);
+        dest.writeInt(version);
+        dest.writeList(rfId);
     }
 }

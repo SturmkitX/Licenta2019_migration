@@ -59,7 +59,7 @@ public class BlankFragment extends Fragment {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.trackerView.setLayoutManager(manager);
 
-        this.adapter = new MyAdapter(trackers);
+        this.adapter = new MyAdapter(trackers, getContext());
         trackerView.setAdapter(adapter);
 
         return view;

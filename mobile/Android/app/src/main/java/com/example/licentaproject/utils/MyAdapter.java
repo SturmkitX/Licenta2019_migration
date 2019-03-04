@@ -1,21 +1,24 @@
 package com.example.licentaproject.utils;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.licentaproject.R;
+import com.example.licentaproject.TrackerSettingsActivity;
 import com.example.licentaproject.models.Tracker;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements View.OnLongClickListener {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements View.OnClickListener {
     private List<Tracker> mDataset;
+    private Context context;    // used for context switching
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -27,12 +30,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
         public MyViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView);
+            itemView.setTag(this);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(List<Tracker> myDataset) {
+    public MyAdapter(List<Tracker> myDataset, Context cont) {
         mDataset = myDataset;
+        context = cont;
     }
 
     // Create new views (invoked by the layout manager)
@@ -43,7 +48,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tracker, parent, false);
         MyViewHolder vh = new MyViewHolder(v);
 
-        v.setOnLongClickListener(this);
+        v.setOnClickListener(this);
         return vh;
     }
 
@@ -63,11 +68,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     }
 
     @Override
-    public boolean onLongClick(View v) {
-        Log.d("VIEW_TYPE", v.toString());
-        TextView textView = v.findViewById(R.id.textView);
-        String name = textView.getText().toString();
-        Toast.makeText(v.getContext(), "Tracker name: " + name, Toast.LENGTH_LONG).show();
-        return true;
+    public void onClick(View v) {
+        MyViewHolder holder = (MyViewHolder) v.getTag();
+        int position = holder.getAdapterPosition();
+        Tracker tracker = mDataset.get(position);
+
+        // start a new TrackerSettingsActivity
+        Log.d("ADAPTER_TRACKER_NULL", tracker == null ? "NULL" : "NOT NULL");
+        Intent intent = new Intent(context, TrackerSettingsActivity.class);
+        intent.putExtra("tracker", (Parcelable) tracker);
+        context.startActivity(intent);
     }
 }

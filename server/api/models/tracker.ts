@@ -27,6 +27,10 @@ const TrackerSchema = new Schema({
         type: Boolean,
         default: false
     },
+    preferredMethod: {
+        type: String,
+        default: 'None'
+    },
     history: [{
         type: Schema.Types.ObjectId,
         ref: 'History',

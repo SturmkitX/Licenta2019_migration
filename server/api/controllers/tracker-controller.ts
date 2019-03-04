@@ -68,4 +68,17 @@ export class TrackerController{
                 }
             });
     }
+
+    public updateOwnTracker(req: Request, res: Response): void {
+        const tracker = req.body;
+        Tracker.updateOne({_id: tracker._id}, tracker, (err, trackerDoc) => {
+            if (err) {
+                res.status(500).send(err);
+            } else if (!trackerDoc) {
+                res.status(400).send(null);
+            } else {
+                res.status(200).json(trackerDoc);
+            }
+        });
+    }
 }
