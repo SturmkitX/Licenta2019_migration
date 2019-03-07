@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="69e2572d-6519-4be0-81a2-f9eacba7ca7c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/BlankFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/BlankFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/models/Tracker.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/models/Tracker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/MyAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/MyAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/models/tracker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/models/tracker.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/routes/tracker-routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/routes/tracker-routes.ts" afterDir="false" />
-    </list>
+    <list default="true" id="69e2572d-6519-4be0-81a2-f9eacba7ca7c" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +175,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="36" />
     <option name="width" value="1280" />
     <option name="height" value="968" />
@@ -305,15 +295,15 @@
       <workItem from="1551361533527" duration="4176000" />
       <workItem from="1551390181286" duration="3115000" />
       <workItem from="1551467573539" duration="10472000" />
-      <workItem from="1551690740512" duration="5353000" />
+      <workItem from="1551690740512" duration="5948000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="128086000" />
+    <option name="totallyTimeSpent" value="128681000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="27" width="1932" height="1033" extended-state="7" />
+    <frame x="-6" y="27" width="1932" height="1033" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29020235" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
