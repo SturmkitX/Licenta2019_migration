@@ -22,6 +22,9 @@ export class TrackerRoutes {
         app.route('/resource/tracker/:trackerId')
             .get(this.guard.check('ADMIN'), this.controller.getSpecific);
 
+        app.route('/resource/update/tracker')
+            .post(this.controller.updateOwnTracker);
+
 
 
         // USER + ADMIN routes

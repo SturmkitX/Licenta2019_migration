@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.NfcA;
 import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -52,12 +53,16 @@ public class TrackerAddActivity extends AppCompatActivity implements View.OnClic
                 PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        IntentFilter filter2 = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
+        IntentFilter filter3 = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
             filter.addDataType("*/*");
+            filter2.addDataType("*/*");
+            filter3.addDataType("*/*");
         } catch(IntentFilter.MalformedMimeTypeException e) {
             e.printStackTrace();
         }
-        this.intentFilters = new IntentFilter[] { filter };
+        this.intentFilters = new IntentFilter[] { filter, filter2, filter3 };
         this.techList = new String[][] { new String[] { NfcF.class.getName() } };
 
         this.statusText = (TextView) findViewById(R.id.detectStatus);

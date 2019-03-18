@@ -23,9 +23,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, TrackerMapActivity.class);
-        startActivity(intent);
-        finish();
+//        Intent intent = new Intent(this, TrackerMapActivity.class);
+//        startActivity(intent);
+//        finish();
         setContentView(R.layout.activity_login);
     }
 

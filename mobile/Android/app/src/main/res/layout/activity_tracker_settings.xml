@@ -7,6 +7,7 @@
     tools:context=".TrackerSettingsActivity">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="316dp"
         android:layout_height="505dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -171,11 +172,56 @@
                     android:spinnerMode="dropdown" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/trackerSsid0"
+                    android:layout_width="111dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Name"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/trackerPass0"
+                    android:layout_width="116dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+
+                <CheckBox
+                    android:id="@+id/trackerActive0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
             <Button
                 android:id="@+id/updateBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Save settings" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="159dp"
+                android:layout_marginLeft="159dp"
+                android:layout_marginEnd="108dp"
+                android:layout_marginRight="108dp"
+                android:layout_marginBottom="220dp"
+                android:text="Limited APs during dev"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </LinearLayout>
     </ScrollView>

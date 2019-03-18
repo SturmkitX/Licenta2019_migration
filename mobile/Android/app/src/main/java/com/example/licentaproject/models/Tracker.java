@@ -21,6 +21,7 @@ public class Tracker implements Parcelable {
     private String preferredMethod;
     private List<Byte> rfId;
     private String userId;
+    private List<APPreference> aps;
 
     @JsonProperty(value = "__v")
     private int version;
@@ -42,6 +43,7 @@ public class Tracker implements Parcelable {
         userId = in.readString();
         version = in.readInt();
         rfId = (List<Byte>) in.readArrayList(Byte.class.getClassLoader());
+        aps = (List<APPreference>) in.readArrayList(APPreference.class.getClassLoader());
     }
 
     public static final Creator<Tracker> CREATOR = new Creator<Tracker>() {
@@ -144,6 +146,14 @@ public class Tracker implements Parcelable {
         this.preferredMethod = preferredMethod;
     }
 
+    public List<APPreference> getAps() {
+        return aps;
+    }
+
+    public void setAps(List<APPreference> aps) {
+        this.aps = aps;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -161,5 +171,6 @@ public class Tracker implements Parcelable {
         dest.writeString(userId);
         dest.writeInt(version);
         dest.writeList(rfId);
+        dest.writeList(aps);
     }
 }

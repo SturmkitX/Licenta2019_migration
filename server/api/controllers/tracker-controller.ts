@@ -71,7 +71,11 @@ export class TrackerController{
 
     public updateOwnTracker(req: Request, res: Response): void {
         const tracker = req.body;
-        Tracker.updateOne({_id: tracker._id}, tracker, (err, trackerDoc) => {
+        console.log('Original tracker: ');
+        console.log(tracker);
+        Tracker.update({_id: tracker._id}, tracker, (err, trackerDoc) => {
+            console.log('Tracker DOC after update:');
+            console.log(trackerDoc);
             if (err) {
                 res.status(500).send(err);
             } else if (!trackerDoc) {

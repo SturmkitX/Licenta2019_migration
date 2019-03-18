@@ -4,7 +4,7 @@ import com.example.licentaproject.models.User;
 
 public class SessionData {
 
-    private static final String serverUrl = "192.168.0.106:3000";
+    private static final String serverUrl = "192.168.0.107:3000";
     private static String token = null;
     private static User user = null;
 

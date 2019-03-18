@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import {AccessPointSchema} from "./ap-pref";
 
 const Schema = mongoose.Schema;
 
@@ -34,6 +35,10 @@ const TrackerSchema = new Schema({
     history: [{
         type: Schema.Types.ObjectId,
         ref: 'History',
+        default: []
+    }],
+    aps: [{
+        type: AccessPointSchema,
         default: []
     }],
     userId: {

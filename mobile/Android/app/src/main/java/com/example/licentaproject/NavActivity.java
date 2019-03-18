@@ -31,7 +31,7 @@ public class NavActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     tx = getSupportFragmentManager().beginTransaction();
-                    tx.replace(R.id.fragment, new BlankFragment2());
+//                    tx.replace(R.id.fragment, new BlankFragment2());
                     tx.commit();
                     return true;
                 case R.id.navigation_notifications:
