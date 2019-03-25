@@ -36,6 +36,8 @@ export class HistoryController{
             res.status(400).json(null);
         }
 
+        console.log('Histry received from Arduino!');
+        console.log(req.body);
         new History(req.body).save((err, entry) => {
             if (err) {
                 res.status(500).send(err);

@@ -10,6 +10,11 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 #endif
 
 #define MAX_CLIENT_BUF 15
+#define MAX_BAN_SIZE 16
+#define UPDATE_INTERVAL 30000       // should be increased, but a low value is needed for testing
+
+#define SERVER_ADDRESS "192.168.0.107"
+#define SERVER_PORT 80
 
 typedef struct
 {
@@ -27,9 +32,18 @@ bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
 byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8]; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+ApInfo apInfo[8] = {{"Sala 5 lectura", "sala5#lectura"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+byte apInfoSize = 1;
+char bannedAp[MAX_BAN_SIZE][32] = {};
+int banIndex = 1;
+unsigned long lastScan;
+unsigned long lastUpdate;
+int updateFails = 0;
+
+bool wifiConnected = false;
 
 WiFiEspServer server(80);
+WiFiEspClass manager;
 
 // hash is 6073954540343
 // ssid is 0b8c07cc48c4e1c2e32eef22
@@ -114,7 +128,16 @@ void setup()
     Serial.println(ssid);
 
     // start access point
-    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_NONE, HIDDEN, false);
+    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_NONE, VIS_TYPE_HIDDEN, false);
+    if (espDrv.getConnectionStatus() == WL_CONNECTED)
+    {
+        Serial.println("Original status is connected!");
+    }
+    else
+    {
+        Serial.println("Original status DISCONNECTED");
+    }
+    
 
     Serial.println("Access point started");
     printWifiStatus();
@@ -124,14 +147,165 @@ void setup()
     Serial.println("Server started");
 }
 
+bool connectWifi()
+{
+    uint8_t number = manager.scanNetworks();
+    delay(2000);
+
+    // list the found networks
+    // for (int i=0; i < number; i++)
+    // {
+    //     Serial.println(espDrv.getSSIDNetworks(i));
+    // }
+
+    Serial.println("Number of scanned networks: " + String(number));
+    if (apInfoSize == 0)
+    {
+        // skip to open point connection
+        goto openConnection;
+    }
+
+    // 1. search for a predefined AP
+    for (int i=0; i < number; i++)
+    {
+        // espDrv is declared as extern in EspDrv.h
+        char* foundSsid = espDrv.getSSIDNetworks(i);
+        for (int j=0; j < apInfoSize; j++)
+        {
+            if (strcmp(foundSsid, apInfo[j].ssid) == 0)
+            {
+                // found a SSID matching the name, check if it also matches the password
+                String bssidLog = "Found Predefined AP with BSSID: ";
+                bssidLog += espDrv.getBSSIDNetworks(i);
+                Serial.println(bssidLog);
+                int status = manager.begin(apInfo[j].ssid, apInfo[j].password);
+                if (status == WL_CONNECTED)
+                {
+                    // get the IP address
+                    // delay(10000);
+                    IPAddress addr = manager.localIP();
+                    char addrStr[16];
+                    sprintf(addrStr, "%d.%d.%d.%d", addr[0], addr[1], addr[2], addr[3]);
+
+                    String statusLog = "Access Point IP is: ";
+                    statusLog += addrStr;
+                    Serial.println(statusLog);
+                    // check if the AP has Internet connection
+                    if (espDrv.ping("google.com"))
+                    {
+                        Serial.println("Successfully pinged Google!");
+                        return true;
+                    }
+                    else
+                    {
+                        String status = "Connected to AP ";
+                        status += apInfo[j].ssid;
+                        status += ", but no Internet connection";
+                        Serial.println(status);
+                        manager.disconnect();
+                    }
+                    
+                }
+            }
+        }        
+    }
+
+    // we will reach this point in case there is no predefined AP we can connect to
+    openConnection:
+    Serial.println("Searching for an open connection:");
+    for (int i=0; i < number; i++)
+    {
+        uint8_t encType = espDrv.getEncTypeNetworks(i);
+        int32_t rssi = espDrv.getRSSINetworks(i);
+        if (encType == ENC_TYPE_NONE)
+        {
+            // connect to this AP
+            char *foundSsid = espDrv.getSSIDNetworks(i);
+            String statusLog = "Open AP: ";
+            statusLog += foundSsid;
+            statusLog += ", RSSI: ";
+            statusLog += String(rssi);
+            Serial.println(statusLog);
+            int index = 0;
+            for (index; index < MAX_BAN_SIZE && bannedAp[index][0] != '\0'; index++)
+            {
+                if (strcmp(foundSsid, bannedAp[index]) == 0)
+                {
+                    index = MAX_BAN_SIZE;
+                    break;
+                }
+            }
+            if (index == MAX_BAN_SIZE) continue;
+            
+            int status = manager.begin(foundSsid, "");
+            if (status == WL_CONNECTED)
+            {
+                // first try only (should be increased, but let's not bother other people's APs anymore)
+                // int tries = 0;
+                // check if the AP has Internet connection
+
+                // get the IP address
+                IPAddress addr = manager.localIP();
+                char addrStr[16];
+                sprintf(addrStr, "%d.%d.%d.%d", addr[0], addr[1], addr[2], addr[3]);
+
+                statusLog = "Access Point IP is: ";
+                statusLog += addrStr;
+                Serial.println(statusLog);
+                if (espDrv.ping("google.com"))
+                {
+                    return true;
+                }
+                else
+                {
+                    statusLog = "Banned AP ";
+                    statusLog += foundSsid;
+                    Serial.println(statusLog);
+                    manager.disconnect();
+                    strcpy(bannedAp[banIndex % MAX_BAN_SIZE], foundSsid);
+                    banIndex = (banIndex + 1) % MAX_BAN_SIZE;
+                }
+            }
+        }
+    }
+
+    Serial.println("No open connection found!");
+    // no connection could have been made
+    return false;
+}
+
 void loop()
 {
+    // if (!wifiConnected && millis() - lastScan >= 10000)
+    if (!espDrv.getConnectionStatus() && millis() - lastScan >= 10000)
+    {
+        wifiConnected = connectWifi();
+        lastScan = millis();
+    }
+
+    // only perform updates if we are connected and periodically
+    // if (espDrv.getConnectionStatus() && millis() - lastUpdate >= UPDATE_INTERVAL)
+    // {
+    //     WiFiEspClient client;
+    //     client.connect(SERVER_ADDRESS, SERVER_PORT);
+    //     if (client.connected())
+    //     {
+
+    //         client.stop();
+    //     }
+    //     else
+    //     {
+    //         updateFails++;
+    //     }
+        
+    // }
+
     // a client connected for
     WiFiEspClient client = server.available(); // listen for incoming clients
 
     if (client)
     {
-        StaticJsonDocument<32> doc;
+        StaticJsonDocument<300> doc;
         String msg = "";
         int recv = 0;
         Serial.println("New client");
@@ -158,6 +332,7 @@ void loop()
         if (doc["action"] == "AP_UPDATE")
         {
             JsonArray arr = doc["id"];
+            Serial.println("Local size: " + String(rfIdSize) + " Received size: " + String(arr.size()));
             if (arr.size() != rfIdSize)
             {
                 Serial.println("Incorrect RFID size");
@@ -170,6 +345,7 @@ void loop()
                 if (arr[i] != rfId[i])
                 {
                     // incorrect RF-ID
+                    Serial.println("Correct RFID size, but incorrect content");
                     goto endProcessing;
                 }
             }
@@ -182,8 +358,14 @@ void loop()
             {
                 strcpy(apInfo[i].ssid, arr[i]["ssid"]);
                 strcpy(apInfo[i].password, arr[i]["password"]);
-                Serial.println("APs successfully updated");
             }
+            apInfoSize = arr.size();
+            Serial.println("APs successfully updated");
+            Serial.println("AP list new size: " + String(apInfoSize));
+
+            // disconnect from the current AP, needed for testing purposes
+            manager.disconnect();
+            wifiConnected = false;
         }
 
     endProcessing:
@@ -194,6 +376,13 @@ void loop()
         client.stop();
         Serial.println("Client disconnected");
     }
+    // else
+    // {
+    //     String status = "No client connected! ";
+    //     status += (wifiConnected ? "CONNECTED" : "NOT CONNECTED");
+    //     Serial.println(status);
+    // }
+    
 }
 
 void sendHttpResponse(WiFiEspClient client)
