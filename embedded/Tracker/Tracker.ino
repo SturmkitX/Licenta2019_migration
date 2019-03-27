@@ -14,7 +14,7 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 #define UPDATE_INTERVAL 30000       // should be increased, but a low value is needed for testing
 
 #define SERVER_ADDRESS "192.168.0.107"
-#define SERVER_PORT 80
+#define SERVER_PORT 3000
 
 typedef struct
 {
@@ -39,6 +39,7 @@ int banIndex = 1;
 unsigned long lastScan;
 unsigned long lastUpdate;
 int updateFails = 0;
+bool gpsConnected = true;
 
 bool wifiConnected = false;
 
@@ -274,31 +275,88 @@ bool connectWifi()
     return false;
 }
 
+JsonDocument prepareJSON()
+{
+    StaticJsonDocument<400> data;
+    JsonArray rfIdArray = data.createNestedArray("rfId");
+    for (int i=0; i < rfIdSize; i++)
+    {
+        rfIdArray.add((char)rfId[i]);
+    }
+    JsonArray posArray = data.createNestedArray("positions");
+    if (espDrv.getConnectionStatus() != WL_NO_SHIELD)
+    {
+        JsonObject wifiObj = posArray.createNestedObject();
+        wifiObj["source"] = "WIFI";
+        JsonArray macs = wifiObj.createNestedArray("macs");
+
+        // send max 5 MAC addresses, for now
+        for (int i=0; i < 5; i++)
+        {
+            JsonObject macInfo = macs.createNestedObject();
+            macInfo["mac"] = espDrv.getBSSIDNetworks(i);
+            macInfo["rssi"] = espDrv.getRSSINetworks(i);
+        }
+    }
+
+    if (gpsConnected)
+    {
+        // add some mock values
+        JsonObject gpsObj = posArray.createNestedObject();
+        gpsObj["source"] = "GPS";
+
+        gpsObj["latitude"] = 22.06;
+        gpsObj["longitude"] = 15.345;
+    }
+
+    return data;
+}
+
 void loop()
 {
     // if (!wifiConnected && millis() - lastScan >= 10000)
-    if (!espDrv.getConnectionStatus() && millis() - lastScan >= 10000)
+    if (espDrv.getConnectionStatus() != WL_CONNECTED && millis() - lastScan >= 10000)
     {
         wifiConnected = connectWifi();
         lastScan = millis();
     }
 
     // only perform updates if we are connected and periodically
-    // if (espDrv.getConnectionStatus() && millis() - lastUpdate >= UPDATE_INTERVAL)
-    // {
-    //     WiFiEspClient client;
-    //     client.connect(SERVER_ADDRESS, SERVER_PORT);
-    //     if (client.connected())
-    //     {
+    if (espDrv.getConnectionStatus() == WL_CONNECTED && millis() - lastUpdate >= UPDATE_INTERVAL)
+    {
+        WiFiEspClient client;
+        JsonDocument doc = prepareJSON();
+        client.connect(SERVER_ADDRESS, SERVER_PORT);
+        if (client.connected())
+        {
+            delay(500);
+            Serial.println("JSON Object to send: ");
+            serializeJsonPretty(doc, Serial);
+            Serial.println();
+            client.print("POST /public/history HTTP/1.1\r\n");
+            client.print("Host: ");
+            client.print(SERVER_ADDRESS);
+            client.print("\r\n");
+            client.print("Content-Type: application/json\r\n");
+            client.print("Content-Length: ");
+            client.print(measureJson(doc));
+            client.print("\r\n");
+            client.print("\r\n");
+            serializeJson(doc, client);
+            client.print("\r\n");
 
-    //         client.stop();
-    //     }
-    //     else
-    //     {
-    //         updateFails++;
-    //     }
-        
-    // }
+            delay(2000);
+            client.stop();
+        }
+        else
+        {
+            Serial.print("Failed to connect to server: ");
+            Serial.println(client.status());
+            updateFails++;
+        }
+
+        lastUpdate = millis();
+    }
 
     // a client connected for
     WiFiEspClient client = server.available(); // listen for incoming clients

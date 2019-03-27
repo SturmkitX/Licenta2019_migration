@@ -1,10 +1,18 @@
 import { History } from '../models/history';
 import { Tracker } from '../models/tracker';
 import { Request, Response } from 'express';
+import {DecodedPosition, HistoryInterm} from "../models/history-interm";
+import {WpsService} from "../services/wps-service";
 
 export class HistoryController{
 
-    constructor() {}
+    private wpsService: WpsService;
+
+    private readonly WPS_WEIGHT = 0.7;
+
+    constructor() {
+        this.wpsService = new WpsService();
+    }
 
     /* ADMIN specific methods */
 
@@ -34,24 +42,31 @@ export class HistoryController{
     public saveHistory(req: Request, res: Response): void {
         if (!req.body) {
             res.status(400).json(null);
+            return;
         }
 
-        console.log('Histry received from Arduino!');
+        console.log('History received from Arduino!');
         console.log(req.body);
-        new History(req.body).save((err, entry) => {
-            if (err) {
-                res.status(500).send(err);
+
+        // get the associated tracker
+        Tracker.findOne({rfId: req.body.rfId}, (err, tracker) => {
+            if (tracker == null) {
+                res.status(404).send(err);
+                return;
             } else {
-                // update the parent tracker
+                const trackerId = tracker._id;
 
                 // @ts-ignore
-                Tracker.findByIdAndUpdate(entry.trackerId, {$push: {history: entry._id}},
-                    (err, tracker) => {
-                    if (err) {
-                        res.status(500).send(err);
-                    }
-                });
-                res.status(200).json(entry);
+                const method = tracker.preferredMethod;
+
+                if (method === 'None') {
+                    res.status(200).send();
+                    return;
+                }
+                const interm : HistoryInterm = this.prepareHistory(req.body.positions, trackerId, method);
+                console.log('Interm:');
+                console.log(interm);
+                this.saveHistoryInterm(interm, req, res);
             }
         });
     }
@@ -75,5 +90,73 @@ export class HistoryController{
                     res.status(200).json(tracker.history);
                 }
             });
+    }
+
+    private prepareHistory(positions, trackerId, method : string): HistoryInterm {
+        let wifiPosition: HistoryInterm = null;
+        let gpsPosition: HistoryInterm = null;
+        let interpResult: HistoryInterm = null;
+        for (let position of positions) {
+            if (position.source === 'WIFI' && method.includes('WPS')) {
+                // get the list of macs and their rssi
+                let decodedData: DecodedPosition = this.wpsService.getPosition(position.macs);
+                console.log('WPS data result: ' + decodedData.result);
+                if (decodedData.result == 200) {
+                    wifiPosition = {
+                        trackerId: trackerId,
+                        lat: decodedData.data.lat,
+                        lng: decodedData.data.lon,
+                        range: decodedData.data.range,
+                        source: 'WIFI'
+                    };
+                }
+            } else if (position.source === 'GPS' && method.includes('GPS')) {
+                // gps data is already present
+                gpsPosition = {
+                    trackerId: trackerId,
+                    lat: position.latitude,
+                    lng: position.longitude,
+                    range: 50,   // mock
+                    source: 'GPS'
+                };
+            }
+        }
+
+        // check exclusions
+        if (wifiPosition == null) {
+            return gpsPosition;
+        } else if (gpsPosition == null) {
+            return wifiPosition;
+        } else {
+            interpResult = {
+                trackerId: trackerId,
+                lat: wifiPosition.lat * this.WPS_WEIGHT + gpsPosition.lat * (1.0 - this.WPS_WEIGHT),
+                lng: wifiPosition.lng * this.WPS_WEIGHT + gpsPosition.lng * (1.0 - this.WPS_WEIGHT),
+                range: wifiPosition.range * this.WPS_WEIGHT + gpsPosition.range * (1.0 - this.WPS_WEIGHT),
+                source: 'WPS + GPS'
+            };
+        }
+
+        return interpResult;
+    }
+
+    private saveHistoryInterm(interm: HistoryInterm, req: Request, res: Response) {
+        new History(interm).save((err, entry) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                // update the parent tracker
+
+                // @ts-ignore
+                Tracker.findByIdAndUpdate(entry.trackerId, {$push: {history: entry._id}},
+                    (err, tracker) => {
+                        if (err) {
+                            res.status(500).send(err);
+                            return;
+                        }
+                    });
+                res.status(200).json(entry);
+            }
+        });
     }
 }

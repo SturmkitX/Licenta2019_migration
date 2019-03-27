@@ -26,5 +26,9 @@ export class HistoryRoutes {
         // USER + ADMIN routes
         app.route('/resource/me/history/:trackerId')
             .get(this.controller.getSelfForTracker);
+
+        // public routes
+        app.route('/public/history')
+            .post(this.controller.saveHistory.bind(this.controller));
     }
 }

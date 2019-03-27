@@ -20,6 +20,10 @@ const HistorySchema = new Schema({
         type: Date,
         default: Date.now
     },
+    range: {
+        type: Number,
+        default: 0
+    },
     source: {
         type: String    // leave it as a simple string for now
     }

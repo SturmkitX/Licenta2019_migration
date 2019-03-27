@@ -83,7 +83,7 @@ export class App {
                     return words[1];
                 }
             }).unless({
-                path: ['/public/login', '/public/logout']
+                path: ['/public/login', '/public/logout', '/public/history']
             })
         );
     }
