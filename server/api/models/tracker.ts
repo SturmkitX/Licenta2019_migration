@@ -32,6 +32,15 @@ const TrackerSchema = new Schema({
         type: String,
         default: 'None'
     },
+    lastUpdated: {
+        type: Number,
+        default: 0
+    },
+    lastPosition: {
+        type: Schema.Types.ObjectId,
+        ref: 'History',
+        default: null
+    },
     history: [{
         type: Schema.Types.ObjectId,
         ref: 'History',

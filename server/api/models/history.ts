@@ -17,7 +17,7 @@ const HistorySchema = new Schema({
         required: 'Must specify longitude'
     },
     creationDate: {
-        type: Date,
+        type: Number,
         default: Date.now
     },
     range: {

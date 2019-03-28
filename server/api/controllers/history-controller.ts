@@ -148,7 +148,8 @@ export class HistoryController{
                 // update the parent tracker
 
                 // @ts-ignore
-                Tracker.findByIdAndUpdate(entry.trackerId, {$push: {history: entry._id}},
+                Tracker.findByIdAndUpdate(entry.trackerId, {$push: {history: entry._id}, lastUpdated: entry.creationDate,
+                    lastPosition: entry._id},
                     (err, tracker) => {
                         if (err) {
                             res.status(500).send(err);

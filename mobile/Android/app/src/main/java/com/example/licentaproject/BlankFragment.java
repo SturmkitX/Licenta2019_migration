@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.licentaproject.models.Tracker;
 import com.example.licentaproject.utils.HttpRequestUtil;
 import com.example.licentaproject.utils.MyAdapter;
+import com.example.licentaproject.utils.SessionData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,9 @@ public class BlankFragment extends Fragment {
 
         @Override
         protected List<Tracker> doInBackground(Void... voids) {
-            return (List<Tracker>) HttpRequestUtil.sendRequest("resource/me/tracker", "GET", null, Tracker.class, true);
+            List<Tracker> recv = (List<Tracker>) HttpRequestUtil.sendRequest("resource/me/tracker", "GET", null, Tracker.class, true);
+            SessionData.getUser().setTrackers(recv);
+            return recv;
         }
 
         @Override

@@ -30,5 +30,7 @@ export class TrackerRoutes {
         // USER + ADMIN routes
         app.route('/resource/me/tracker')
             .get(this.controller.getSelf);
+        app.route('/resource/lost/tracker')
+            .get(this.controller.findLostTrackers);
     }
 }

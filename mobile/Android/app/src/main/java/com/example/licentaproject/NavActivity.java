@@ -53,8 +53,8 @@ public class NavActivity extends AppCompatActivity {
         tx.add(R.id.fragment, new BlankFragment());
         tx.commit();
 
-        Tag tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        Log.d("TAG_CREATE", "Tag is in onCreate: " + (tag == null ? "NO" : "YES"));
+//        Tag tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+//        Log.d("TAG_CREATE", "Tag is in onCreate: " + (tag == null ? "NO" : "YES"));
 
         new UserRequestTask().execute();
     }

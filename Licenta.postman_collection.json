@@ -1,81 +1,278 @@
 {
 	"info": {
-		"_postman_id": "6780a63b-ddf1-4203-a256-2d65036490ef",
+		"_postman_id": "104ecab1-6e40-45a4-a111-3cdd30b4e308",
 		"name": "Licenta",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Get All Users",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNjJlM2E4MDJjZjI4MTQ2MWIzMDhkMyIsInBlcm1pc3Npb25zIjpbIlVTRVIiXSwiaWF0IjoxNTQ5OTg5NTkyLCJleHAiOjE1NTAwNzU5OTJ9.1oa5Er6v8hX9uTXVm292wt7fdulWWYojLWNWAltGQxM",
-							"type": "string"
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Log In",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"martin@testus.com\",\n    \"password\": \"testpass\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/public/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"public",
+								"login"
+							]
 						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"martin@testus.com\",\n    \"password\": \"testpass\"\n}"
-				},
-				"url": {
-					"raw": "http://localhost:3000/resource/user/",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"resource",
-						"user",
-						""
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Log In",
-			"request": {
-				"auth": {
-					"type": "noauth"
+			"name": "Others",
+			"item": [
+				{
+					"name": "Full Position",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rfId\": [\n    4,\n    -118,\n    76,\n    66,\n    -20,\n    76,\n    -128\n  ],\n  \"positions\": [\n    {\n      \"source\": \"WIFI\",\n      \"macs\": [\n        {\n          \"mac\": \"c8:3a:35:55:49:f8\",\n          \"rssi\": -38\n        },\n        {\n          \"mac\": \"d4:6e:0e:78:48:14\",\n          \"rssi\": -49\n        },\n        {\n          \"mac\": \"40:9b:cd:a4:db:40\",\n          \"rssi\": -55\n        },\n        {\n          \"mac\": \"64:66:b3:8f:06:f6\",\n          \"rssi\": -59\n        },\n        {\n          \"mac\": \"c8:3a:35:07:5d:18\",\n          \"rssi\": -61\n        }\n      ]\n    },\n    {\n      \"source\": \"GPS\",\n      \"latitude\": 22.06,\n      \"longitude\": 15.345\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/public/history",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"public",
+								"history"
+							]
+						}
+					},
+					"response": []
 				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"martin@testus.com\",\n    \"password\": \"testpass\"\n}"
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:3000/public/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"public",
-						"login"
-					]
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Arty\",\n\t\"lastName\": \"Mega 01\",\n\t\"email\": \"amega@testus.com\",\n\t\"password\": \"testpass\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all trackers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/tracker",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"tracker"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find lost trackers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/lost/tracker",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"lost",
+								"tracker"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get myself",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/me/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"me",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get my trackers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/resource/me/tracker",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resource",
+								"me",
+								"tracker"
+							]
+						}
+					},
+					"response": []
 				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNjJlM2E4MDJjZjI4MTQ2MWIzMDhkMyIsInBlcm1pc3Npb25zIjpbIkFETUlOIl0sImlhdCI6MTU1Mzc3NzEwMSwiZXhwIjoxNTUzODYzNTAxfQ.sKVB6_JeYShUqFGogMq5ow6C3RBZIEIrOGvjKssMybs",
+						"type": "string"
+					}
+				]
 			},
-			"response": []
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "47c03a47-ce89-4913-8a96-0d0adc75bce3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f4cb5413-fe02-45c2-9020-9d895947a2b1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		}
 	]
 }

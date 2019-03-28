@@ -1,12 +1,14 @@
 import { Tracker } from '../models/tracker';
 import { Request, Response } from 'express';
 import {User} from "../models/user";
+import DateTimeFormat = Intl.DateTimeFormat;
 
 export class TrackerController{
 
     constructor() {}
 
     /* ADMIN specific methods */
+    private readonly MAX_UPDATE_TIMEOUT = 30000;    // 30 seconds, should be increased in production
 
     public getAll(req: Request, res: Response): void {
         Tracker.find()
@@ -58,8 +60,7 @@ export class TrackerController{
     /* USER + ADMIN methods */
     public getSelf(req: Request, res: Response): void {
         // @ts-ignore
-        Tracker.find({userId: req.user.id})
-            .populate('history')
+        Tracker.find({userId: req.user.id}, {history: 0, lastPosition: 0, userId: 0})
             .exec((err: any, trackers: Document[]) => {
                 if (err) {
                     res.status(500).send(err);
@@ -84,5 +85,17 @@ export class TrackerController{
                 res.status(200).json(trackerDoc);
             }
         });
+    }
+
+    public findLostTrackers(req: Request, res: Response): void {
+        Tracker.find({lost: true}, {aps: 0, history: 0})
+            .populate('lastPosition')
+            .exec((err, docs) => {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(docs);
+                }
+            });
     }
 }

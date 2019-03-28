@@ -22,12 +22,16 @@ public class Tracker implements Parcelable {
     private List<Byte> rfId;
     private String userId;
     private List<APPreference> aps;
+    private long lastUpdated;
+
+    @JsonIgnore
+    private History lastPosition;
 
     @JsonProperty(value = "__v")
     private int version;
 
     @JsonIgnore
-    private List<Object> history;
+    private List<History> history;
 
     public Tracker() {
     }
@@ -44,6 +48,9 @@ public class Tracker implements Parcelable {
         version = in.readInt();
         rfId = (List<Byte>) in.readArrayList(Byte.class.getClassLoader());
         aps = (List<APPreference>) in.readArrayList(APPreference.class.getClassLoader());
+        history = (List<History>) in.readArrayList(History.class.getClassLoader());
+        lastUpdated = in.readLong();
+        lastPosition = in.readParcelable(History.class.getClassLoader());
     }
 
     public static final Creator<Tracker> CREATOR = new Creator<Tracker>() {
@@ -130,11 +137,11 @@ public class Tracker implements Parcelable {
         this.version = version;
     }
 
-    public List<Object> getHistory() {
+    public List<History> getHistory() {
         return history;
     }
 
-    public void setHistory(List<Object> history) {
+    public void setHistory(List<History> history) {
         this.history = history;
     }
 
@@ -152,6 +159,22 @@ public class Tracker implements Parcelable {
 
     public void setAps(List<APPreference> aps) {
         this.aps = aps;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public History getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(History lastPosition) {
+        this.lastPosition = lastPosition;
     }
 
     @Override
@@ -172,5 +195,8 @@ public class Tracker implements Parcelable {
         dest.writeInt(version);
         dest.writeList(rfId);
         dest.writeList(aps);
+        dest.writeList(history);
+        dest.writeLong(lastUpdated);
+        dest.writeParcelable(lastPosition, 0);
     }
 }

@@ -59,8 +59,7 @@ export class UserController{
     /* USER + ADMIN methods */
     public getSelf(req: Request, res: Response): void {
         // @ts-ignore
-        User.findById(req.user.id)
-            .populate('trackers')
+        User.findById(req.user.id, {trackers: 0, password: 0})
             .exec((err: any, userDoc: Document) => {
                 const user: any = userDoc;
                 if (err) {
@@ -68,7 +67,7 @@ export class UserController{
                 } else if (!user) {
                     res.status(404).json(null);
                 } else {
-                    user.password = null;
+                    // user.password = null;
                     res.status(200).json(user);
                 }
             });

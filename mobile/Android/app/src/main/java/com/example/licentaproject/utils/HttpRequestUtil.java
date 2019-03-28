@@ -2,6 +2,7 @@ package com.example.licentaproject.utils;
 
 import android.util.Log;
 
+import com.example.licentaproject.models.History;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,7 @@ public class HttpRequestUtil {
                     result = mapper.readValue(in, returnType);
                 } else {
                     CollectionType type = mapper.getTypeFactory().constructCollectionType(List.class, returnType);
+                    mapper.getTypeFactory().constructCollectionType(List.class, History.class);
                     result = mapper.readValue(in, type);
                 }
                 Log.d("MARSHALL_RESULT", mapper.writeValueAsString(result));
