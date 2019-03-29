@@ -35,6 +35,9 @@ public class NavActivity extends AppCompatActivity {
                     tx.commit();
                     return true;
                 case R.id.navigation_notifications:
+                    tx = getSupportFragmentManager().beginTransaction();
+                    tx.replace(R.id.fragment, new MapFragment());
+                    tx.commit();
                     return true;
             }
             return false;
