@@ -11,7 +11,8 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 
 #define MAX_CLIENT_BUF 15
 #define MAX_BAN_SIZE 16
-#define UPDATE_INTERVAL 30000       // should be increased, but a low value is needed for testing
+#define MAX_UPDATE_TIMEOUT 30000       // should be increased, but a low value is needed for testing
+#define AUTO_UPDATE_INTERVAL 10000
 
 #define SERVER_ADDRESS "192.168.0.107"
 #define SERVER_PORT 3000
@@ -22,8 +23,8 @@ typedef struct
     char password[64];
 } ApInfo;
 
-char ssid[32];
-const char pass[] = "";
+char ssid[32] = "";
+char pass[32] = "";
 int status = WL_IDLE_STATUS; // the Wifi radio's status
 byte rfId[] = {4, -118, 76, 66, -20, 76, -128};
 byte rfIdSize = 7;
@@ -32,22 +33,20 @@ bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
 byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8] = {{"Sala 5 lectura", "sala5#lectura"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+ApInfo apInfo[8] = {{"Baietii 108", "shonstieparola"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
 byte apInfoSize = 1;
 char bannedAp[MAX_BAN_SIZE][32] = {};
 int banIndex = 1;
 unsigned long lastScan;
 unsigned long lastUpdate;
-int updateFails = 0;
+unsigned long autoLastUpdate;
 bool gpsConnected = true;
+uint8_t scannedNetworks;
 
 bool wifiConnected = false;
 
 WiFiEspServer server(80);
 WiFiEspClass manager;
-
-// hash is 6073954540343
-// ssid is 0b8c07cc48c4e1c2e32eef22
 
 void computeSsid(char ssid[], byte hash[])
 {
@@ -89,6 +88,46 @@ void computeSsid(char ssid[], byte hash[])
     ssid[23] = hexa[(hash[19] & 0x0F)];
 }
 
+void computePassword(char password[], byte hash[])
+{
+    const char hexa[] = "0123456789abcdef";
+    password[0] = hexa[(hash[0] >> 4)];
+    password[1] = hexa[(hash[0] & 0x0F)];
+
+    password[2] = hexa[(hash[1] >> 4)];
+    password[3] = hexa[(hash[1] & 0x0F)];
+
+    password[4] = hexa[(hash[4] >> 4)];
+    password[5] = hexa[(hash[4] & 0x0F)];
+
+    password[6] = hexa[(hash[5] >> 4)];
+    password[7] = hexa[(hash[5] & 0x0F)];
+
+    password[8] = hexa[(hash[8] >> 4)];
+    password[9] = hexa[(hash[8] & 0x0F)];
+
+    password[10] = hexa[(hash[9] >> 4)];
+    password[11] = hexa[(hash[9] & 0x0F)];
+
+    password[12] = hexa[(hash[12] >> 4)];
+    password[13] = hexa[(hash[12] & 0x0F)];
+
+    password[14] = hexa[(hash[13] >> 4)];
+    password[15] = hexa[(hash[13] & 0x0F)];
+
+    password[16] = hexa[(hash[16] >> 4)];
+    password[17] = hexa[(hash[16] & 0x0F)];
+
+    password[18] = hexa[(hash[17] >> 4)];
+    password[19] = hexa[(hash[17] & 0x0F)];
+
+    password[20] = hexa[(hash[20] >> 4)];
+    password[21] = hexa[(hash[20] & 0x0F)];
+
+    password[22] = hexa[(hash[21] >> 4)];
+    password[23] = hexa[(hash[21] & 0x0F)];
+}
+
 void setup()
 {
     Serial.begin(115200);  // initialize serial for debugging
@@ -124,12 +163,15 @@ void setup()
 
     // extract part of the hash and use it for SSID (must be converted to HEX)
     computeSsid(ssid, hash);
+    computePassword(pass, hash);
 
     Serial.print("Attempting to start AP ");
     Serial.println(ssid);
 
+    // sha.reset();
+
     // start access point
-    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_NONE, VIS_TYPE_HIDDEN, false);
+    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);
     if (espDrv.getConnectionStatus() == WL_CONNECTED)
     {
         Serial.println("Original status is connected!");
@@ -148,10 +190,15 @@ void setup()
     Serial.println("Server started");
 }
 
+void scanNetworks()
+{
+    scannedNetworks = manager.scanNetworks();
+    delay(2000);
+}
+
 bool connectWifi()
 {
-    uint8_t number = manager.scanNetworks();
-    delay(2000);
+    scanNetworks();
 
     // list the found networks
     // for (int i=0; i < number; i++)
@@ -159,7 +206,7 @@ bool connectWifi()
     //     Serial.println(espDrv.getSSIDNetworks(i));
     // }
 
-    Serial.println("Number of scanned networks: " + String(number));
+    Serial.println("Number of scanned networks: " + String(scannedNetworks));
     if (apInfoSize == 0)
     {
         // skip to open point connection
@@ -167,7 +214,7 @@ bool connectWifi()
     }
 
     // 1. search for a predefined AP
-    for (int i=0; i < number; i++)
+    for (int i=0; i < scannedNetworks; i++)
     {
         // espDrv is declared as extern in EspDrv.h
         char* foundSsid = espDrv.getSSIDNetworks(i);
@@ -214,7 +261,7 @@ bool connectWifi()
     // we will reach this point in case there is no predefined AP we can connect to
     openConnection:
     Serial.println("Searching for an open connection:");
-    for (int i=0; i < number; i++)
+    for (int i=0; i < scannedNetworks; i++)
     {
         uint8_t encType = espDrv.getEncTypeNetworks(i);
         int32_t rssi = espDrv.getRSSINetworks(i);
@@ -322,7 +369,7 @@ void loop()
     }
 
     // only perform updates if we are connected and periodically
-    if (espDrv.getConnectionStatus() == WL_CONNECTED && millis() - lastUpdate >= UPDATE_INTERVAL)
+    if (espDrv.getConnectionStatus() == WL_CONNECTED && millis() - autoLastUpdate >= AUTO_UPDATE_INTERVAL)
     {
         WiFiEspClient client;
         JsonDocument doc = prepareJSON();
@@ -347,15 +394,23 @@ void loop()
 
             delay(2000);
             client.stop();
+            lastUpdate = millis();
         }
         else
         {
             Serial.print("Failed to connect to server: ");
             Serial.println(client.status());
-            updateFails++;
         }
 
-        lastUpdate = millis();
+        autoLastUpdate = millis();
+    }
+
+    if (lastUpdate != 0 && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT)
+    {
+        lost = true;
+
+        // set AP as visible
+        status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_BROADCAST, false);
     }
 
     // a client connected for
@@ -425,6 +480,38 @@ void loop()
             manager.disconnect();
             wifiConnected = false;
         }
+        else
+        if (doc["action"] == "POS_UPDATE")
+        {
+            JsonArray arr = doc["id"];
+            Serial.println("Local size: " + String(rfIdSize) + " Received size: " + String(arr.size()));
+            if (arr.size() != rfIdSize)
+            {
+                Serial.println("Incorrect RFID size");
+                // should notice the client
+                goto endProcessing;
+            }
+
+            for (int i = 0; i < rfIdSize; i++)
+            {
+                if (arr[i] != rfId[i])
+                {
+                    // incorrect RF-ID
+                    Serial.println("Correct RFID size, but incorrect content");
+                    goto endProcessing;
+                }
+            }
+
+            // the ID is correct at this point
+            scanNetworks();
+            JsonDocument info = prepareJSON();
+            serializeJson(info, client);
+            lost = false;
+
+            // set AP back to hidden
+            status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);
+        }
+        
 
     endProcessing:
         // give the web browser time to receive the data
