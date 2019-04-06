@@ -4,7 +4,6 @@ package com.example.licentaproject.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -24,13 +23,11 @@ public class Tracker implements Parcelable {
     private List<APPreference> aps;
     private long lastUpdated;
 
-    @JsonIgnore
     private History lastPosition;
 
     @JsonProperty(value = "__v")
     private int version;
 
-    @JsonIgnore
     private List<History> history;
 
     public Tracker() {

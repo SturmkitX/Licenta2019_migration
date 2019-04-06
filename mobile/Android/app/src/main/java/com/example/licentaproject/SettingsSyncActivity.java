@@ -1,6 +1,5 @@
 package com.example.licentaproject;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,20 +20,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaproject.models.Tracker;
+import com.example.licentaproject.utils.SyncUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SettingsSyncActivity extends AppCompatActivity {
 
@@ -60,67 +53,10 @@ public class SettingsSyncActivity extends AppCompatActivity {
         syncStatus = findViewById(R.id.syncStatus);
 
         tracker = getIntent().getParcelableExtra("tracker");
-        apName = computeSsid();
+        apName = SyncUtil.computeSsid(tracker);
 
-        // add the WiFi network
         WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (!manager.isWifiEnabled() && manager.setWifiEnabled(true)) {
-            Toast.makeText(this, "WiFi is not / could not be enabled!", Toast.LENGTH_LONG).show();
-        }
-
-        // see the status of all configured networks
-        manager.disconnect();
-        List<WifiConfiguration> confList = manager.getConfiguredNetworks();
-        Log.d("CONF_INFO_LEN", "" + confList.size());
-        for (WifiConfiguration conf : confList) {
-            Log.d("CONF_INFO", String.format("%d %s %s", conf.networkId, conf.SSID, WifiConfiguration.Status.strings[conf.status]));
-            manager.removeNetwork(conf.networkId);
-        }
-
-        WifiConfiguration conf = new WifiConfiguration();
-        conf.hiddenSSID = true;
-        conf.SSID = String.format("\"%s\"", apName);
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-        conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP | WifiConfiguration.GroupCipher.TKIP);
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-        conf.status = WifiConfiguration.Status.ENABLED;
-
-        int origId = conf.networkId;
-        int addedId = manager.addNetwork(conf);
-        StringBuilder status = new StringBuilder();
-        if (addedId >= 0) {
-            status.append("Successfully added Arduino\n");
-        } else {
-            status.append("Could not add Arduino\n");
-        }
-        int reconnectId = manager.getConnectionInfo().getNetworkId();
-
-        if (manager.disconnect()) {
-            status.append("Successfully disconnected from Original AP\n");
-        } else {
-            status.append("Failed to disconnect AP\n");
-        }
-
-//        confList = manager.getConfiguredNetworks();
-//        for (WifiConfiguration confIter : confList) {
-//            if (confIter.networkId == addedId) {
-//                confIter.status = WifiConfiguration.Status.CURRENT;
-//                manager.updateNetwork(confIter);
-//                break;
-//            }
-//
-//        }
-
-        Log.d("NETWORK_ID", String.format("%d %d %d", origId, addedId, conf.networkId));
-        if (manager.enableNetwork(addedId, true)) {
-            status.append("Successfully enabled AP\n");
-        } else {
-            status.append("Failed to enable AP\n");
-        }
-        manager.reconnect();
-
-        syncStatus.setText(status.toString());
+        syncStatus.setText(SyncUtil.connectHiddenNetwork(getApplicationContext(), apName) ? "SUCCESSFULLY CONNECTED" : "Could not connect!");
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
@@ -131,55 +67,6 @@ public class SettingsSyncActivity extends AppCompatActivity {
         filter2.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(new NetworkChangeReceiver(manager), filter2);
 
-    }
-
-    private String computeSsid() {
-        List<Byte> rfId = tracker.getRfId();
-        String apName = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            StringBuilder builder = new StringBuilder();
-
-            builder.append(rfId.get(0) & 0xFF);
-            for (int i=1; i < rfId.size(); i++) {
-                builder.append(String.format(":%d", rfId.get(i) & 0xFF));
-            }
-
-            String preDigest = builder.toString();
-            Log.d("HEX_PRE_PROC", preDigest);
-            Log.d("HEX_PRE_PROC_LEN", "" + preDigest.getBytes(Charset.forName("UTF-8")).length);
-
-            builder = new StringBuilder();
-
-            md.update(preDigest.getBytes(Charset.forName("UTF-8")));
-            byte[] result = md.digest();
-
-            byte[] expanded = new byte[result.length * 2];
-            for (int i=0; i < result.length; i++) {
-                expanded[i*2] = (byte)((result[i] & 0xFF) >>> 4);
-                expanded[i*2+1] = (byte)(result[i] & 0x0F);
-                Log.d("HEX_PROC", String.format("%d %d %d", result[i], expanded[i*2], expanded[i*2+1]));
-            }
-
-            char[] hex = "0123456789abcdef".toCharArray();
-
-            for (int i=0; i < 8; i++) {
-                builder.append(hex[ expanded[i] ]);
-            }
-            for (int i=16; i < 24; i++) {
-                builder.append(hex[ expanded[i] ]);
-            }
-            for (int i=32; i < 40; i++) {
-                builder.append(hex[ expanded[i] ]);
-            }
-
-            apName = builder.toString();
-            Log.d("AP_HEX_NAME", apName);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return apName;
     }
 
     private class SocketJob extends AsyncTask<Tracker, Void, Boolean> {
