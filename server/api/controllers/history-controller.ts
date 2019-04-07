@@ -152,11 +152,13 @@ export class HistoryController{
                     lastPosition: entry._id},
                     (err, tracker) => {
                         if (err) {
+                            console.log('Failed to push history into tracker');
+                            console.log(err);
                             res.status(500).send(err);
-                            return;
+                        } else {
+                            res.status(200).json(entry);
                         }
                     });
-                res.status(200).json(entry);
             }
         });
     }

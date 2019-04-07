@@ -60,7 +60,7 @@ export class TrackerController{
     /* USER + ADMIN methods */
     public getSelf(req: Request, res: Response): void {
         // @ts-ignore
-        Tracker.find({userId: req.user.id}, {history: 0, lastPosition: 0, userId: 0})
+        Tracker.find({userId: req.user.id}, {history: 0, lastPosition: 0})
             .exec((err: any, trackers: Document[]) => {
                 if (err) {
                     res.status(500).send(err);

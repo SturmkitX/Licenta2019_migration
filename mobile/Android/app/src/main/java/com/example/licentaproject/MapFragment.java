@@ -243,6 +243,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         @Override
         public void run() {
             String apName = SyncUtil.computeSsid(tracker);
+            String apPass = SyncUtil.computePassword(tracker);
 //            boolean connected = SyncUtil.connectHiddenNetwork(getContext(), apName);
 //            Log.d("FOUND_AP_PASSIVE", connected ? "YES" : "NO");
             WifiManager manager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -259,19 +260,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 return;
             }
 
-            // create a Network config
-            WifiConfiguration conf = new WifiConfiguration();
-            conf.SSID = String.format("\"%s\"", found.SSID);
-            conf.preSharedKey = "\"\"";     // should be added later
-            int networkId = manager.addNetwork(conf);
-            if (networkId < 0) {
-                Log.d("MAP_NET_ADD","Unable to add new network");
-                return;
-            }
-
             int reconnectId = manager.getConnectionInfo().getNetworkId();
-            manager.disconnect();
-            if (manager.enableNetwork(networkId, true)) {
+            if (SyncUtil.connectNetwork(getContext(), apName, apPass, false)) {
                 Log.d("MAP_NET_CONN", "Successfully enabled network");
             } else {
                 Log.d("MAP_NET_CONN", "Failed to enable network");
@@ -360,15 +350,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         }
 
         @Override
-        protected void onPostExecute(Map response) {
-            Toast.makeText(context, response == null ? "POS QUERY SUCCESS" : "POS QUERY UNSUCCESSFUL", Toast.LENGTH_LONG).show();
-            if (response == null) {
+        protected void onPostExecute(Map result) {
+            Toast.makeText(context, result == null ? "POS QUERY SUCCESS" : "POS QUERY UNSUCCESSFUL", Toast.LENGTH_LONG).show();
+            if (result == null) {
                 return;
             }
 
             // send data to the server
             // server side should be refined in order to recompense those who find lost devices
-            HttpRequestUtil.sendRequest("public/history", "POST", response, Map.class, false);
+            Map<String, Object> response = (Map<String, Object>) HttpRequestUtil.sendRequest("public/history", "POST", result, Map.class, false);
+            Log.d("POS_QUERY_SERVER", response.toString());
         }
     }
 

@@ -1,6 +1,7 @@
 #include "WiFiEsp.h"
 #include "ArduinoJson.h"
 #include "sha256.h"
+#include "MemoryFree.h"
 #include <string.h>
 
 // Emulate Serial1 on pins 6/7 if not present
@@ -13,8 +14,9 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 #define MAX_BAN_SIZE 16
 #define MAX_UPDATE_TIMEOUT 30000       // should be increased, but a low value is needed for testing
 #define AUTO_UPDATE_INTERVAL 10000
+#define SCAN_INTERVAL 300000
 
-#define SERVER_ADDRESS "192.168.0.107"
+#define SERVER_ADDRESS "192.168.0.103"
 #define SERVER_PORT 3000
 
 typedef struct
@@ -33,8 +35,8 @@ bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
 byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8] = {{"Baietii 108", "shonstieparola"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
-byte apInfoSize = 1;
+ApInfo apInfo[8] = {/*{"Baietii 108", "shonstieparola"}*/}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+byte apInfoSize = 0;
 char bannedAp[MAX_BAN_SIZE][32] = {};
 int banIndex = 1;
 unsigned long lastScan;
@@ -167,11 +169,12 @@ void setup()
 
     Serial.print("Attempting to start AP ");
     Serial.println(ssid);
+    Serial.println(pass);
 
     // sha.reset();
 
     // start access point
-    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);
+    status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA2_PSK, VIS_TYPE_BROADCAST, false);
     if (espDrv.getConnectionStatus() == WL_CONNECTED)
     {
         Serial.println("Original status is connected!");
@@ -223,9 +226,8 @@ bool connectWifi()
             if (strcmp(foundSsid, apInfo[j].ssid) == 0)
             {
                 // found a SSID matching the name, check if it also matches the password
-                String bssidLog = "Found Predefined AP with BSSID: ";
-                bssidLog += espDrv.getBSSIDNetworks(i);
-                Serial.println(bssidLog);
+                Serial.print("Found Predefined AP with BSSID: ");
+                Serial.println(espDrv.getBSSIDNetworks(i));
                 int status = manager.begin(apInfo[j].ssid, apInfo[j].password);
                 if (status == WL_CONNECTED)
                 {
@@ -322,9 +324,8 @@ bool connectWifi()
     return false;
 }
 
-JsonDocument prepareJSON()
+void prepareJSON(JsonDocument& data)
 {
-    StaticJsonDocument<400> data;
     JsonArray rfIdArray = data.createNestedArray("rfId");
     for (int i=0; i < rfIdSize; i++)
     {
@@ -355,51 +356,54 @@ JsonDocument prepareJSON()
         gpsObj["latitude"] = 22.06;
         gpsObj["longitude"] = 15.345;
     }
-
-    return data;
 }
 
 void loop()
 {
     // if (!wifiConnected && millis() - lastScan >= 10000)
-    if (espDrv.getConnectionStatus() != WL_CONNECTED && millis() - lastScan >= 10000)
+    if (millis() - lastScan >= SCAN_INTERVAL)
     {
-        wifiConnected = connectWifi();
+        if (espDrv.getConnectionStatus() != WL_CONNECTED)
+            wifiConnected = connectWifi();
         lastScan = millis();
     }
 
     // only perform updates if we are connected and periodically
-    if (espDrv.getConnectionStatus() == WL_CONNECTED && millis() - autoLastUpdate >= AUTO_UPDATE_INTERVAL)
+    if (millis() - autoLastUpdate >= AUTO_UPDATE_INTERVAL)
     {
-        WiFiEspClient client;
-        JsonDocument doc = prepareJSON();
-        client.connect(SERVER_ADDRESS, SERVER_PORT);
-        if (client.connected())
+        if (espDrv.getConnectionStatus() == WL_CONNECTED)
         {
-            delay(500);
-            Serial.println("JSON Object to send: ");
-            serializeJsonPretty(doc, Serial);
-            Serial.println();
-            client.print("POST /public/history HTTP/1.1\r\n");
-            client.print("Host: ");
-            client.print(SERVER_ADDRESS);
-            client.print("\r\n");
-            client.print("Content-Type: application/json\r\n");
-            client.print("Content-Length: ");
-            client.print(measureJson(doc));
-            client.print("\r\n");
-            client.print("\r\n");
-            serializeJson(doc, client);
-            client.print("\r\n");
+            WiFiEspClient client;
+            StaticJsonDocument<400> doc;
+            prepareJSON(doc);
+            client.connect(SERVER_ADDRESS, SERVER_PORT);
+            if (client.connected())
+            {
+                delay(500);
+                Serial.println("JSON Object to send: ");
+                serializeJsonPretty(doc, Serial);
+                Serial.println();
+                client.print("POST /public/history HTTP/1.1\r\n");
+                client.print("Host: ");
+                client.print(SERVER_ADDRESS);
+                client.print("\r\n");
+                client.print("Content-Type: application/json\r\n");
+                client.print("Content-Length: ");
+                client.print(measureJson(doc));
+                client.print("\r\n");
+                client.print("\r\n");
+                serializeJson(doc, client);
+                client.print("\r\n");
 
-            delay(2000);
-            client.stop();
-            lastUpdate = millis();
-        }
-        else
-        {
-            Serial.print("Failed to connect to server: ");
-            Serial.println(client.status());
+                delay(2000);
+                client.stop();
+                lastUpdate = millis();
+            }
+            else
+            {
+                Serial.print("Failed to connect to server: ");
+                Serial.println(client.status());
+            }
         }
 
         autoLastUpdate = millis();
@@ -408,30 +412,43 @@ void loop()
     if (lastUpdate != 0 && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT)
     {
         lost = true;
+        Serial.println("The AP is now lost and visible");
 
         // set AP as visible
-        status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_BROADCAST, false);
+        // status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_BROADCAST, false);
     }
 
-    // a client connected for
+    // delay(2000);
+
+    // Serial.println("Waiting for a client...");
+    // a client connected
+    // Serial.print("Free memory before accepting a client: ");
+    // Serial.println(freeMemory());
+    // Serial.print("Available bytes before awaiting client: ");
+    // Serial.println(Serial1.available());
     WiFiEspClient client = server.available(); // listen for incoming clients
+    // Serial.print("Client status: ");
+    // Serial.println(client.status());
 
     if (client)
     {
         StaticJsonDocument<300> doc;
         String msg = "";
-        int recv = 0;
         Serial.println("New client");
-        while (client.connected())
+        // while (client.connected())
+        // {
+        //     if (client.available())
+        //     {
+        //         msg += (char)client.read();
+        //     }
+        //     else
+        //     {
+        //         break;
+        //     }
+        // }
+        while (client.available())
         {
-            if (client.available() || recv == 0)
-            {
-                msg += (char)client.read();
-            }
-            else
-            {
-                break;
-            }
+            msg += (char)client.read();
         }
 
         Serial.println(msg);
@@ -476,9 +493,14 @@ void loop()
             Serial.println("APs successfully updated");
             Serial.println("AP list new size: " + String(apInfoSize));
 
+            // send an ACK back to the client
+            if (client.connected())
+                client.print("ACK\n");
+
             // disconnect from the current AP, needed for testing purposes
             manager.disconnect();
             wifiConnected = false;
+            configured = true;
         }
         else
         if (doc["action"] == "POS_UPDATE")
@@ -504,12 +526,13 @@ void loop()
 
             // the ID is correct at this point
             scanNetworks();
-            JsonDocument info = prepareJSON();
+            StaticJsonDocument<400> info;
+            prepareJSON(info);
             serializeJson(info, client);
             lost = false;
 
             // set AP back to hidden
-            status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);
+            // status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);
         }
         
 

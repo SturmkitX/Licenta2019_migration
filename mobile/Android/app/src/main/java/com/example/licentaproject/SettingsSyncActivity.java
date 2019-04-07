@@ -24,11 +24,16 @@ import com.example.licentaproject.utils.SyncUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SettingsSyncActivity extends AppCompatActivity {
 
@@ -42,8 +47,10 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
     private Tracker tracker;
     private String apName;
+    private String apPass;
 
     private TextView syncStatus;
+    private boolean connected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +61,18 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
         tracker = getIntent().getParcelableExtra("tracker");
         apName = SyncUtil.computeSsid(tracker);
+        apPass = SyncUtil.computePassword(tracker);
+
+        Log.d("NETWORK_CREDENTIALS", String.format("Name: %s, Password: %s", apName, apPass));
 
         WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        syncStatus.setText(SyncUtil.connectHiddenNetwork(getApplicationContext(), apName) ? "SUCCESSFULLY CONNECTED" : "Could not connect!");
+        syncStatus.setText(SyncUtil.connectNetwork(getApplicationContext(), apName, apPass, false) ? "SUCCESSFULLY CONNECTED" : "Could not connect!");
+
+        connected = false;
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
-        registerReceiver(new WifiBroadcastReceiver(manager), filter);
+//        registerReceiver(new WifiBroadcastReceiver(manager), filter);
 //        new SocketJob(this).execute();
 
         IntentFilter filter2 = new IntentFilter();
@@ -95,7 +107,7 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
                 Socket socket = new Socket();
                 selected.bindSocket(socket);
-                socket.connect(new InetSocketAddress("192.168.4.1", 80));
+                socket.connect(new InetSocketAddress("192.168.4.1", 80), 10000);
                 comm.put("action", "AP_UPDATE");
                 comm.put("id", tracker.getRfId());
                 comm.put("apList", tracker.getAps());
@@ -105,7 +117,29 @@ public class SettingsSyncActivity extends AppCompatActivity {
                 BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
                 out.write(msg);
                 out.flush();
+
+                // get the response
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String response = reader.readLine();
                 socket.close();
+
+                Log.d("SOCKET_RESPONSE", response);
+
+                if (!response.equals("ACK")) {
+                    return false;
+                }
+
+//                new Timer().schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            socket.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, 10000);
+
 
                 return true;
             } catch (IOException e) {
@@ -117,6 +151,7 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean response) {
+            Log.d("SYNC_STATUS", response ? "SYNC SUCCESS" : "SYNC UNSUCCESSFUL");
             Toast.makeText(context, response ? "SYNC SUCCESS" : "SYNC UNSUCCESSFUL", Toast.LENGTH_LONG).show();
         }
     }
@@ -163,8 +198,15 @@ public class SettingsSyncActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
                 NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                int address = manager.getConnectionInfo().getIpAddress();
+                int stub1 = (address >>> 24);
+                int stub2 = ((address >>> 16) & 0xFF);
+                int stub3 = ((address >>> 8) & 0xFF);
+                int stub4 = (address & 0xFF);
                 Log.d("NETWORK_DETAILED_STATE", info.getDetailedState().name());
-                if (info.isConnected()) {
+                Log.d("NETWORK_IP_ADDR", String.format("%d.%d.%d.%d", stub4, stub3, stub2, stub1));
+                if (info.isConnected() && !connected) {
+                    connected = true;
                     Log.d("NETWORK_SSID_RECV", manager.getConnectionInfo().getSSID());
                     new SocketJob(context).execute();
                 }
