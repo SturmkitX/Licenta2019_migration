@@ -409,7 +409,7 @@ void loop()
         autoLastUpdate = millis();
     }
 
-    if (lastUpdate != 0 && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT)
+    if (configured && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT)
     {
         lost = true;
         Serial.println("The AP is now lost and visible");
@@ -505,6 +505,7 @@ void loop()
         else
         if (doc["action"] == "POS_UPDATE")
         {
+            Serial.println("Received action POS_UPDATE");
             JsonArray arr = doc["id"];
             Serial.println("Local size: " + String(rfIdSize) + " Received size: " + String(arr.size()));
             if (arr.size() != rfIdSize)

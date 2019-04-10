@@ -3,6 +3,8 @@ import { Tracker } from '../models/tracker';
 import { Request, Response } from 'express';
 import {DecodedPosition, HistoryInterm} from "../models/history-interm";
 import {WpsService} from "../services/wps-service";
+import {FindLog} from "../models/find-log";
+import {User} from "../models/user";
 
 export class HistoryController{
 
@@ -45,7 +47,7 @@ export class HistoryController{
             return;
         }
 
-        console.log('History received from Arduino!');
+        console.log('History received!');
         console.log(req.body);
 
         // get the associated tracker
@@ -60,10 +62,13 @@ export class HistoryController{
                 const method = tracker.preferredMethod;
 
                 if (method === 'None') {
-                    res.status(200).send();
+                    res.status(200).json({status: 'No positioning option selected'});
                     return;
                 }
-                const interm : HistoryInterm = this.prepareHistory(req.body.positions, trackerId, method);
+
+                // @ts-ignore
+                const lostMethod = tracker.lost ? 'WPS + GPS' : method;
+                const interm : HistoryInterm = this.prepareHistory(req.body.positions, trackerId, lostMethod);
                 console.log('Interm:');
                 console.log(interm);
                 this.saveHistoryInterm(interm, req, res);
@@ -141,6 +146,13 @@ export class HistoryController{
     }
 
     private saveHistoryInterm(interm: HistoryInterm, req: Request, res: Response) {
+        // no suitable position has been found
+        // although the computations were correct
+        if (!interm) {
+            res.status(200).json({status: 'No suitable position found'});
+            return;
+        }
+
         new History(interm).save((err, entry) => {
             if (err) {
                 res.status(500).send(err);
@@ -157,6 +169,17 @@ export class HistoryController{
                             res.status(500).send(err);
                         } else {
                             res.status(200).json(entry);
+
+                            // if the request is made by an authorized user,
+                            // then it is part of a community check
+                            Tracker.findOneAndUpdate({_id: interm.trackerId}, {lost: false}).exec();
+
+                            // @ts-ignore
+                            const user: any = req.user;
+                            if (user) {
+                                new FindLog({userId: user._id, trackerId: interm.trackerId}).save();
+                                User.findOneAndUpdate({_id: user._id}, {$inc: {stars: 1}}).exec();
+                            }
                         }
                     });
             }

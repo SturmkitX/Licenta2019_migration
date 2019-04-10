@@ -7,4 +7,5 @@ gen/
 *.apk
 obj/
 .vscode/
+.vstags
 

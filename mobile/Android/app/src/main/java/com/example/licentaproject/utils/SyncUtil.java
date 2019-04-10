@@ -32,8 +32,8 @@ public class SyncUtil {
             }
 
             String preDigest = builder.toString();
-            Log.d("HEX_PRE_PROC", preDigest);
-            Log.d("HEX_PRE_PROC_LEN", "" + preDigest.getBytes(Charset.forName("UTF-8")).length);
+//            Log.d("HEX_PRE_PROC", preDigest);
+//            Log.d("HEX_PRE_PROC_LEN", "" + preDigest.getBytes(Charset.forName("UTF-8")).length);
 
             builder = new StringBuilder();
 
@@ -44,7 +44,7 @@ public class SyncUtil {
             for (int i=0; i < result.length; i++) {
                 expanded[i*2] = (byte)((result[i] & 0xFF) >>> 4);
                 expanded[i*2+1] = (byte)(result[i] & 0x0F);
-                Log.d("HEX_PROC", String.format("%d %d %d", result[i], expanded[i*2], expanded[i*2+1]));
+//                Log.d("HEX_PROC", String.format("%d %d %d", result[i], expanded[i*2], expanded[i*2+1]));
             }
 
             char[] hex = "0123456789abcdef".toCharArray();
@@ -60,7 +60,7 @@ public class SyncUtil {
             }
 
             apName = builder.toString();
-            Log.d("AP_HEX_NAME", apName);
+//            Log.d("AP_HEX_NAME", apName);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -81,8 +81,8 @@ public class SyncUtil {
             }
 
             String preDigest = builder.toString();
-            Log.d("HEX_PRE_PROC", preDigest);
-            Log.d("HEX_PRE_PROC_LEN", "" + preDigest.getBytes(Charset.forName("UTF-8")).length);
+//            Log.d("HEX_PRE_PROC", preDigest);
+//            Log.d("HEX_PRE_PROC_LEN", "" + preDigest.getBytes(Charset.forName("UTF-8")).length);
 
             builder = new StringBuilder();
 
@@ -93,7 +93,7 @@ public class SyncUtil {
             for (int i=0; i < result.length; i++) {
                 expanded[i*2] = (byte)((result[i] & 0xFF) >>> 4);
                 expanded[i*2+1] = (byte)(result[i] & 0x0F);
-                Log.d("HEX_PROC", String.format("%d %d %d", result[i], expanded[i*2], expanded[i*2+1]));
+//                Log.d("HEX_PROC", String.format("%d %d %d", result[i], expanded[i*2], expanded[i*2+1]));
             }
 
             char[] hex = "0123456789abcdef".toCharArray();
@@ -118,7 +118,7 @@ public class SyncUtil {
             }
 
             apPass = builder.toString();
-            Log.d("AP_HEX_PASSWORD", apPass);
+//            Log.d("AP_HEX_PASSWORD", apPass);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

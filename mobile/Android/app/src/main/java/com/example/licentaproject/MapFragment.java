@@ -2,6 +2,7 @@ package com.example.licentaproject;
 
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +15,10 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.nfc.NfcAdapter;
+import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -33,6 +36,7 @@ import android.widget.ToggleButton;
 import com.example.licentaproject.models.History;
 import com.example.licentaproject.models.Tracker;
 import com.example.licentaproject.utils.HttpRequestUtil;
+import com.example.licentaproject.utils.SessionData;
 import com.example.licentaproject.utils.SyncUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,33 +51,36 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnCircleClickListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnCircleClickListener, View.OnClickListener {
 
 //    private List<Tracker> trackers;
     private GoogleMap mMap;
     private MapView mapView;
     private LocationManager locationManager;
-    private Circle activeTracker;
 
     private TextView mapUserField;
     private ToggleButton mapStatusField;
+    private Button connectWifiBtn;
 
-    // will run periodically a network scan routine
-    private Timer scanTimer;
-    private TimerTask currentTask;
+    private BroadcastReceiver networkReceiver;
 
+    private WifiConfiguration originalNet;
+
+    private NfcAdapter nfcAdapter;
+    private PendingIntent nfcPendingIntent;
+    private IntentFilter[] nfcIntentFilters;
+    private String[][] nfcTechList;
 
     public MapFragment() {
         // Required empty public constructor
@@ -83,16 +90,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 //        this.trackers = trackers;
 //    }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 //        this.trackers = new ArrayList<>();
         this.locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
 
-        scanTimer = new Timer();
+        networkReceiver = new NetworkChangeReceiver();
     }
 
 
@@ -108,6 +113,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
         mapUserField = view.findViewById(R.id.mapUserField);
         mapStatusField = view.findViewById(R.id.mapStatusField);
+        connectWifiBtn = view.findViewById(R.id.connectWifiBtn);
+
+        connectWifiBtn.setOnClickListener(this);
 
         mapView.onResume(); // needed to get the map to display immediately
 
@@ -118,6 +126,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         }
 
         mapView.getMapAsync(this);
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
+        this.nfcPendingIntent =
+                PendingIntent.getActivity(getActivity(), 0, new Intent(getActivity(), getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        try {
+            filter.addDataType("*/*");
+        } catch(IntentFilter.MalformedMimeTypeException e) {
+            e.printStackTrace();
+        }
+        this.nfcIntentFilters = new IntentFilter[] { filter };
+        this.nfcTechList = new String[][] { new String[] { NfcF.class.getName() } };
 
         return view;
     }
@@ -138,16 +159,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         mMap.addCircle(new CircleOptions().center(sydney).fillColor(Color.RED).radius(200000).strokeWidth(0));
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        getContext().registerReceiver(networkReceiver, filter);
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+        this.nfcAdapter.enableForegroundDispatch(getActivity(), this.nfcPendingIntent, null, null);
+        Log.d("RESUME_NFC", "On Resume, tag is " + (nfcAdapter.isEnabled() ? "ON" : "OFF"));
         mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+        getContext().unregisterReceiver(networkReceiver);
+        nfcAdapter.disableForegroundDispatch(getActivity());
+        Log.d("PAUSE_NFC", "On Pause, tag is " + (nfcAdapter.isEnabled() ? "ON" : "OFF"));
         mapView.onPause();
+        locationManager.removeUpdates(this);
     }
 
     @Override
@@ -164,8 +199,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
     @Override
     public void onLocationChanged(Location location) {
-//        LatLng pos = new LatLng(location.getLatitude(), location.getLongitude());
-//        mMap.addCircle(new CircleOptions().fillColor(Color.BLUE).clickable(false).radius(location.getAccuracy()));
+        SessionData.setLastLocation(location);
     }
 
     @Override
@@ -186,17 +220,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     @Override
     public void onCircleClick(Circle circle) {
         Log.d("CIRCLE_CLICK", "Clicked on circle " + circle.getTag());
-        if (activeTracker != null) {
-            activeTracker.setFillColor(Color.RED);
-            currentTask.cancel();
+        if (SessionData.getActiveTracker() != null) {
+            SessionData.getActiveTracker().setFillColor(Color.RED);
         }
 
-        activeTracker = circle;
-        activeTracker.setFillColor(Color.GREEN);
-
-        scanTimer.purge();
-        currentTask = new FindAPTask((Tracker) activeTracker.getTag());
-        scanTimer.scheduleAtFixedRate(currentTask, 15000, 15000);
+        SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_CONNECT);
+        SessionData.setActiveTracker(circle);
+        circle.setFillColor(Color.GREEN);
     }
 
     private class LostTrackerTask extends AsyncTask<Object, Void, List<Tracker>> {
@@ -227,73 +257,92 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                     map.addMarker(new MarkerOptions().position(pos).title(tracker.getName()).snippet(tracker.getUserId()));
                     Circle circle = map.addCircle(new CircleOptions().radius(lastPosition.getRange() * 1000).clickable(true).center(pos).fillColor(Color.RED));
                     circle.setTag(tracker);
+
+                    // update the active circle, if the case
+                    Circle active = SessionData.getActiveTracker();
+                    if (active != null && pos.equals(active.getCenter())) {
+                        SessionData.setActiveTracker(circle);
+                        circle.setFillColor(Color.GREEN);
+                    }
                 }
             }
         }
     }
 
-    private class FindAPTask extends TimerTask {
+    @Override
+    public void onClick(View v) {
+        // pressed the Connect Wifi button
+        Tracker tracker = (Tracker) SessionData.getActiveTracker().getTag();
+        WifiManager manager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        private Tracker tracker;
+        String apName = SyncUtil.computeSsid(tracker);
+        String apPass = SyncUtil.computePassword(tracker);
 
-        public FindAPTask(Tracker tracker) {
-            this.tracker = tracker;
+        // memorize active network connection
+        int netId = manager.getConnectionInfo().getNetworkId();
+        for (WifiConfiguration conf : manager.getConfiguredNetworks()) {
+            if (conf.networkId == netId) {
+                originalNet = conf;
+                break;
+            }
         }
 
-        @Override
-        public void run() {
-            String apName = SyncUtil.computeSsid(tracker);
-            String apPass = SyncUtil.computePassword(tracker);
-//            boolean connected = SyncUtil.connectHiddenNetwork(getContext(), apName);
-//            Log.d("FOUND_AP_PASSIVE", connected ? "YES" : "NO");
-            WifiManager manager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            ScanResult found = null;
-            for (ScanResult result : manager.getScanResults()) {
-                Log.d("RESULT_SSID", result.SSID);
-                if (result.SSID.equals(apName)) {
-                    found = result;
-                    break;
-                }
-            }
+        if (SyncUtil.connectNetwork(getContext(), apName, apPass, false)) {
+            Log.d("MAP_NET_CONN", "Successfully enabled network");
+        } else {
+            Log.d("MAP_NET_CONN", "Failed to enable network");
 
-            if (found == null) {
-                return;
-            }
-
-            int reconnectId = manager.getConnectionInfo().getNetworkId();
-            if (SyncUtil.connectNetwork(getContext(), apName, apPass, false)) {
-                Log.d("MAP_NET_CONN", "Successfully enabled network");
-            } else {
-                Log.d("MAP_NET_CONN", "Failed to enable network");
-            }
-
-            // perform data exchange with Arduino
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-            getContext().registerReceiver(new NetworkChangeReceiver(manager, tracker), filter);
-
+            // reconnect to old AP
+            manager.disconnect();
+            int origId = manager.addNetwork(originalNet);
+            manager.enableNetwork(origId, true);
+            manager.reconnect();
         }
     }
 
     private class NetworkChangeReceiver extends BroadcastReceiver {
 
-        private WifiManager manager;
-        private Tracker tracker;
-
-        public NetworkChangeReceiver(WifiManager manager, Tracker tracker) {
-            this.manager = manager;
-            this.tracker = tracker;
-        }
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                Tracker tracker = SessionData.getActiveTracker() == null ? null : (Tracker) SessionData.getActiveTracker().getTag();
+                if (tracker == null) {
+                    return;
+                }
+
+                WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                String apName = SyncUtil.computeSsid(tracker);
                 NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 Log.d("NETWORK_DETAILED_STATE", info.getDetailedState().name());
+
+                String currentSsid = manager.getConnectionInfo().getSSID();
+                currentSsid = currentSsid.substring(1, currentSsid.length() - 1);
+                Log.d("NETWORK_SSID_STATE", String.format("%s %s", apName, currentSsid));
+                Log.d("CURRENT_DISCO_STEP", SessionData.getConfigStep().name());
                 if (info.isConnected()) {
-                    Log.d("NETWORK_SSID_RECV", manager.getConnectionInfo().getSSID());
-                    new SocketJob(context, tracker).execute();
+                    if (currentSsid.equals(apName) && SessionData.getConfigStep() == SessionData.ConfigStep.ATTEMPT_CONNECT) {
+                        SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_UPDATE);
+                        Log.d("NETWORK_SSID_RECV", currentSsid);
+                        new SocketJob(context).execute();
+                    } else if (SessionData.getConfigStep() == SessionData.ConfigStep.ATTEMPT_UPDATE) {
+                        // check Internet connection
+                        try {
+                            InetAddress addr = InetAddress.getByName(SessionData.getPingUrl());
+                            if (addr.equals("")) {
+                                return;
+                            }
+
+                            // get the history update pool
+                            for (Object o : SessionData.getFoundPool()) {
+                                new HistoryUpdateTask().execute((Map) o);
+                            }
+                            SessionData.getFoundPool().clear();
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+
             }
         }
     }
@@ -303,9 +352,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         private Context context;
         private Tracker tracker;
 
-        public SocketJob(Context context, Tracker tracker) {
+        public SocketJob(Context context) {
             this.context = context;
-            this.tracker = tracker;
+            this.tracker = (Tracker) SessionData.getActiveTracker().getTag();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -351,15 +400,57 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
         @Override
         protected void onPostExecute(Map result) {
-            Toast.makeText(context, result == null ? "POS QUERY SUCCESS" : "POS QUERY UNSUCCESSFUL", Toast.LENGTH_LONG).show();
+            Log.d("MAP_ARDUINO_QUERY", result != null ? "POS QUERY SUCCESS" : "POS QUERY UNSUCCESSFUL");
             if (result == null) {
                 return;
             }
 
+            // disconnect from the current AP
+            WifiManager manager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            manager.disconnect();
+            for (WifiConfiguration conf : manager.getConfiguredNetworks()) {
+                manager.removeNetwork(conf.networkId);
+            }
+            int netId = manager.addNetwork(originalNet);
+            if (netId >= 0) {
+                manager.enableNetwork(netId, true);
+                manager.reconnect();
+            }
+            originalNet = null;
+
+
             // send data to the server
             // server side should be refined in order to recompense those who find lost devices
-            Map<String, Object> response = (Map<String, Object>) HttpRequestUtil.sendRequest("public/history", "POST", result, Map.class, false);
-            Log.d("POS_QUERY_SERVER", response.toString());
+//            new HistoryUpdateTask().execute(result);
+            SessionData.getFoundPool().add(result);
+        }
+    }
+
+    private class HistoryUpdateTask extends AsyncTask<Map, Void, Map> {
+
+        @Override
+        protected Map doInBackground(Map... results) {
+            int tries = 0;
+            while (tries < 5) {
+                Map response = (Map<String, Object>) HttpRequestUtil.sendRequest("public/history", "POST", results[0], Map.class, false);
+                if (response == null) {
+                    tries++;
+                } else {
+                    return response;
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Map response) {
+            if (response != null) {
+                Log.d("POS_QUERY_SERVER", response.toString());
+                SessionData.setConfigStep(SessionData.ConfigStep.IDLE);
+                SessionData.setActiveTracker(null);
+            }
+
         }
     }
 

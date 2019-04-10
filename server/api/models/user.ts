@@ -28,7 +28,11 @@ const UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Tracker',
         default: []
-    }]
+    }],
+    stars: {
+        type: Number,
+        default: 0
+    }
 });
 
 const User = mongoose.model('User', UserSchema);

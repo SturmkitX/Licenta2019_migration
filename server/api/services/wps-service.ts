@@ -4,7 +4,7 @@ import * as XMLHttp from 'xmlhttprequest';
 export class WpsService {
     constructor() {}
 
-    private serverAddr: string = 'http://api.mylnikov.org/geolocation/wifi?v=1.1&data=open&search=';
+    private serverAddr: string = 'https://api.mylnikov.org/geolocation/wifi?v=1.1&data=open&search=';
 
     public getPosition(stations: any): DecodedPosition {
         let rawData = '';
@@ -18,6 +18,9 @@ export class WpsService {
         let request = new XMLHttp.XMLHttpRequest();
         request.open("GET", `${this.serverAddr}${encodedData}`, false);
         request.send();
+
+        console.log(`Request URL: http://api.mylnikov.org/geolocation/wifi?v=1.1&data=open&search=${encodedData}`);
+        console.log(`Response: ${request.responseText}`);
         const position: DecodedPosition = JSON.parse(request.responseText);
         return position;
     }

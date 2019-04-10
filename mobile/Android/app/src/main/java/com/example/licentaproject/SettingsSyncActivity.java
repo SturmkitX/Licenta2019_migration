@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,14 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SettingsSyncActivity extends AppCompatActivity {
 
@@ -52,6 +48,8 @@ public class SettingsSyncActivity extends AppCompatActivity {
     private TextView syncStatus;
     private boolean connected;
 
+    private BroadcastReceiver broadcastReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,20 +63,29 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
         Log.d("NETWORK_CREDENTIALS", String.format("Name: %s, Password: %s", apName, apPass));
 
-        WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         syncStatus.setText(SyncUtil.connectNetwork(getApplicationContext(), apName, apPass, false) ? "SUCCESSFULLY CONNECTED" : "Could not connect!");
 
         connected = false;
 
+        WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        broadcastReceiver = new NetworkChangeReceiver(manager);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
-//        registerReceiver(new WifiBroadcastReceiver(manager), filter);
-//        new SocketJob(this).execute();
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        registerReceiver(broadcastReceiver, filter);
+    }
 
-        IntentFilter filter2 = new IntentFilter();
-        filter2.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        registerReceiver(new NetworkChangeReceiver(manager), filter2);
+    @Override
+    public void onPause() {
+        super.onPause();
 
+        unregisterReceiver(broadcastReceiver);
     }
 
     private class SocketJob extends AsyncTask<Tracker, Void, Boolean> {
@@ -125,23 +132,7 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
                 Log.d("SOCKET_RESPONSE", response);
 
-                if (!response.equals("ACK")) {
-                    return false;
-                }
-
-//                new Timer().schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            socket.close();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }, 10000);
-
-
-                return true;
+                return (response.equals("ACK"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -153,36 +144,6 @@ public class SettingsSyncActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean response) {
             Log.d("SYNC_STATUS", response ? "SYNC SUCCESS" : "SYNC UNSUCCESSFUL");
             Toast.makeText(context, response ? "SYNC SUCCESS" : "SYNC UNSUCCESSFUL", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private class WifiBroadcastReceiver extends BroadcastReceiver {
-
-        private WifiManager manager;
-
-        public WifiBroadcastReceiver(WifiManager manager) {
-            this.manager = manager;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (action.equals(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)) {
-                SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-                if (SupplicantState.isValidState(state) && state == SupplicantState.COMPLETED) {
-                    // we are connected to a new network
-                    // check if the connected network is the good one
-                    String ssid = manager.getConnectionInfo().getSSID();
-                    Log.d("RECEIVER_HIDDEN_SSID", manager.getConnectionInfo().getHiddenSSID() ? "YES" : "NO");
-                    Log.d("RECEIVER_SUPP_STATE", manager.getConnectionInfo().getSupplicantState().toString());
-                    Log.d("RECEIVER_SUPP_BSSID", manager.getConnectionInfo().getBSSID());
-                    Log.d("RECEIVER_SSID", ssid);
-
-                    if (ssid.equals(apName)) {
-                        new SocketJob(context).execute();
-                    }
-                }
-            }
         }
     }
 

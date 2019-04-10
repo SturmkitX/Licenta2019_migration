@@ -99,6 +99,10 @@ public class BlankFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Tracker> trackers) {
             // update the view
+            if (trackers == null) {
+                return;
+            }
+
             List<String> names = new ArrayList<>();
             for (Tracker t : trackers) {
                 names.add(t.getName());

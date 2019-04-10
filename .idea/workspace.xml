@@ -4,12 +4,17 @@
     <list default="true" id="69e2572d-6519-4be0-81a2-f9eacba7ca7c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/embedded/Tracker/Tracker.ino" beforeDir="false" afterPath="$PROJECT_DIR$/embedded/Tracker/Tracker.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/BlankFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/BlankFragment.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/SettingsSyncActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/SettingsSyncActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/models/Tracker.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/models/Tracker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/HttpRequestUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/HttpRequestUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SyncUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SyncUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/fragment_map.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/fragment_map.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/api/models/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/models/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/api/services/wps-service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/services/wps-service.ts" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,8 +28,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/controllers/history-controller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2584">
-              <caret line="156" column="36" selection-start-line="156" selection-start-column="36" selection-end-line="156" selection-end-column="36" />
+            <state relative-caret-position="346">
+              <caret line="106" column="24" selection-start-line="106" selection-start-column="24" selection-end-line="106" selection-end-column="24" />
               <folding>
                 <element signature="e#0#44#0" expanded="true" />
               </folding>
@@ -32,28 +37,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/api/routes/tracker-routes.ts">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/api/services/wps-service.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="20" selection-start-line="20" selection-end-line="20" />
+            <state relative-caret-position="102">
+              <caret line="6" column="39" selection-start-line="6" selection-start-column="39" selection-end-line="6" selection-end-column="39" />
               <folding>
-                <element signature="e#0#36#0" expanded="true" />
+                <element signature="e#0#57#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/package.json">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/api/models/history.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -73,8 +64,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/models/user.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="23" selection-start-line="15" selection-start-column="23" selection-end-line="15" selection-end-column="23" />
+            <state relative-caret-position="112">
+              <caret line="14" column="21" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/api/models/find-log.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -115,13 +115,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/controllers/tracker-controller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="62" column="72" selection-start-line="62" selection-start-column="72" selection-end-line="62" selection-end-column="72" />
+            <state relative-caret-position="112">
+              <caret line="72" column="24" selection-start-line="72" selection-start-column="24" selection-end-line="72" selection-end-column="24" />
               <folding>
                 <element signature="e#0#44#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/api/routes/history-routes.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="11" column="24" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#36#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -155,9 +167,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/server/api/routes/user-routes.ts" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/server/api/models/user.ts" />
         <option value="$PROJECT_DIR$/server/api/routes/role-routes.ts" />
         <option value="$PROJECT_DIR$/server/api/controllers/login-controller.ts" />
         <option value="$PROJECT_DIR$/mobile/package.json" />
@@ -198,14 +208,16 @@
         <option value="$PROJECT_DIR$/server/api/app.ts" />
         <option value="$PROJECT_DIR$/server/api/routes/history-routes.ts" />
         <option value="$PROJECT_DIR$/server/api/models/history-interm.ts" />
-        <option value="$PROJECT_DIR$/server/api/services/wps-service.ts" />
         <option value="$PROJECT_DIR$/server/api/routes/tracker-routes.ts" />
         <option value="$PROJECT_DIR$/server/api/models/tracker.ts" />
         <option value="$PROJECT_DIR$/server/api/models/history.ts" />
         <option value="$PROJECT_DIR$/server/api/server.ts" />
         <option value="$PROJECT_DIR$/server/api/controllers/user-controller.ts" />
-        <option value="$PROJECT_DIR$/server/api/controllers/history-controller.ts" />
         <option value="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" />
+        <option value="$PROJECT_DIR$/server/api/models/user.ts" />
+        <option value="$PROJECT_DIR$/server/api/models/find-log.ts" />
+        <option value="$PROJECT_DIR$/server/api/controllers/history-controller.ts" />
+        <option value="$PROJECT_DIR$/server/api/services/wps-service.ts" />
       </list>
     </option>
   </component>
@@ -222,6 +234,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -277,14 +291,12 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554598116060" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554854807141" />
     <property name="editor.config.ad.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
@@ -349,12 +361,13 @@
       <workItem from="1553965315107" duration="590000" />
       <workItem from="1554499115174" duration="2388000" />
       <workItem from="1554554096939" duration="8850000" />
-      <workItem from="1554641467111" duration="1892000" />
+      <workItem from="1554641467111" duration="3195000" />
+      <workItem from="1554737720301" duration="8086000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="202127000" />
+    <option name="totallyTimeSpent" value="211516000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -368,8 +381,8 @@
   <component name="ToolWindowManager">
     <frame x="-6" y="27" width="1932" height="1034" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.328541" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49917626" visible="true" weight="0.33173588" />
+      <window_info id="Structure" order="1" sideWeight="0.50082374" side_tool="true" visible="true" weight="0.33173588" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
       <window_info id="UI Designer" order="4" />
@@ -404,7 +417,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/mobile/MobileProject/src/app/pages/main-menu/main-menu.component.ts" />
     <entry file="file://$PROJECT_DIR$/mobile/MobileProject/resources/android/splash/drawable-land-hdpi-screen.png" />
     <entry file="file://$PROJECT_DIR$/mobile/MobileProject/node_modules/@ionic-native/nfc/ngx/index.d.ts" />
     <entry file="file://$PROJECT_DIR$/mobile/MobileProject/src/environments/environment.ts" />
@@ -474,40 +486,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/api/services/wps-service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="20" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#57#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/api/models/history-interm.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="20" selection-start-line="1" selection-start-column="20" selection-end-line="1" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/api/routes/history-routes.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="11" column="24" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/api/controllers/history-controller.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2584">
-          <caret line="156" column="36" selection-start-line="156" selection-start-column="36" selection-end-line="156" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#44#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -538,13 +520,6 @@
           <folding>
             <element signature="e#0#37#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/api/models/user.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="23" selection-start-line="15" selection-start-column="23" selection-end-line="15" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -580,10 +555,54 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/controllers/tracker-controller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="62" column="72" selection-start-line="62" selection-start-column="72" selection-end-line="62" selection-end-column="72" />
+        <state relative-caret-position="112">
+          <caret line="72" column="24" selection-start-line="72" selection-start-column="24" selection-end-line="72" selection-end-column="24" />
           <folding>
             <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/routes/history-routes.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="11" column="24" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/models/user.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="14" column="21" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/models/find-log.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/controllers/history-controller.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="106" column="24" selection-start-line="106" selection-start-column="24" selection-end-line="106" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/services/wps-service.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="39" selection-start-line="6" selection-start-column="39" selection-end-line="6" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#57#0" expanded="true" />
           </folding>
         </state>
       </provider>
