@@ -176,9 +176,14 @@ export class HistoryController{
 
                             // @ts-ignore
                             const user: any = req.user;
+                            console.log('User to recompense: ');
+                            console.log(user);
                             if (user) {
-                                new FindLog({userId: user._id, trackerId: interm.trackerId}).save();
-                                User.findOneAndUpdate({_id: user._id}, {$inc: {stars: 1}}).exec();
+                                new FindLog({userId: user.id, trackerId: interm.trackerId}).save();
+                                User.findOneAndUpdate({_id: user.id}, {$inc: {stars: 1}}).exec();
+
+                                // create a mail object, push it to the db
+                                // then let a timer task send all emails at once
                             }
                         }
                     });

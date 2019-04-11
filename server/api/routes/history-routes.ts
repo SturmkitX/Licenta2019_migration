@@ -16,7 +16,7 @@ export class HistoryRoutes {
         // ADMIN routes
         app.route('/resource/history')
             .get(this.guard.check('ADMIN'), this.controller.getAll)
-            .post(this.controller.saveHistory);
+            .post(this.guard.check('ADMIN'), this.controller.saveHistory.bind(this.controller));
 
         app.route('/resource/history/:historyId')
             .get(this.guard.check('ADMIN'), this.controller.getSpecific);

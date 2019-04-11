@@ -15,6 +15,7 @@ export class WpsService {
         console.log('WPS raw data: ' + rawData);
         const encodedData = Buffer.from(rawData).toString('base64');
 
+        console.log('Requesting location...');
         let request = new XMLHttp.XMLHttpRequest();
         request.open("GET", `${this.serverAddr}${encodedData}`, false);
         request.send();

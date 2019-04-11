@@ -168,7 +168,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         getContext().registerReceiver(networkReceiver, filter);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         this.nfcAdapter.enableForegroundDispatch(getActivity(), this.nfcPendingIntent, null, null);
         Log.d("RESUME_NFC", "On Resume, tag is " + (nfcAdapter.isEnabled() ? "ON" : "OFF"));
         mapView.onResume();
@@ -432,7 +432,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         protected Map doInBackground(Map... results) {
             int tries = 0;
             while (tries < 5) {
-                Map response = (Map<String, Object>) HttpRequestUtil.sendRequest("public/history", "POST", results[0], Map.class, false);
+                Map response = (Map<String, Object>) HttpRequestUtil.sendRequest("resource/history", "POST", results[0], Map.class, false);
                 if (response == null) {
                     tries++;
                 } else {

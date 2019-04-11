@@ -1,8 +1,10 @@
 package com.example.licentaproject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
@@ -103,6 +105,7 @@ public class NavActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onNewIntent(Intent intent) {
         // comes from the Map fragment
@@ -157,7 +160,12 @@ public class NavActivity extends AppCompatActivity {
         }
         wifiList.put("macs", macList);
 
-        Location lastLocation = SessionData.getLastLocation();
+//        Location lastLocation = SessionData.getLastLocation();
+        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        @SuppressLint("MissingPermission") Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastLocation == null) {
+            lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
         if (lastLocation != null) {
             Map<String, Object> gpsList = new HashMap<>();
             gpsList.put("source", "GPS");
