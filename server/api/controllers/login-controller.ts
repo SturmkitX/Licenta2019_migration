@@ -16,6 +16,8 @@ export class LogInController{
                 console.log(user);
                 if (err) {
                     res.status(500).send(err);
+                } else if (!user) {
+                    res.status(404).send();
                 } else {
                     // check password
                     const match = bcrypt.compareSync(req.body.password, user.password);

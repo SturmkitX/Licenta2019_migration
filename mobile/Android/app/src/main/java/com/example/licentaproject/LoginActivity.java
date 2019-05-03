@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.licentaproject.utils.HttpRequestUtil;
 
@@ -33,6 +34,11 @@ public class LoginActivity extends AppCompatActivity {
         String username = ((EditText) findViewById(R.id.emailField)).getText().toString();
         String password = ((EditText) findViewById(R.id.passField)).getText().toString();
 
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please specify both username AND password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Log.d("username", username);
         Log.d("password", password);
 
@@ -56,8 +62,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(AuthResponse auth) {
-            if (!auth.isAuth()) {
+            if (auth == null || !auth.isAuth()) {
                 Log.d("AUTH_STATUS", "Authentication failed!");
+                Toast.makeText(getApplicationContext(), "Authentication failed, please try again!", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("AUTH_STATUS", "Authentication successful");
                 SessionData.setToken(auth.getToken());

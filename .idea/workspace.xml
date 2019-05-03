@@ -2,16 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69e2572d-6519-4be0-81a2-f9eacba7ca7c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/LoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/LoginActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/routes/history-routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/routes/history-routes.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/server.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/services/wps-service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/services/wps-service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/fragment_map.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/fragment_map.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/api/controllers/login-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/login-controller.ts" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -22,13 +18,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/controllers/history-controller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3196">
-              <caret line="188" column="23" selection-start-line="188" selection-start-column="23" selection-end-line="188" selection-end-column="23" />
+            <state relative-caret-position="419">
+              <caret line="182" column="70" selection-start-line="182" selection-start-column="70" selection-end-line="182" selection-end-column="70" />
               <folding>
                 <element signature="e#0#44#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/api/controllers/login-controller.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="20" column="18" selection-start-line="20" selection-start-column="18" selection-end-line="20" selection-end-column="18" />
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -37,7 +45,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/controllers/email-controller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
+            <state relative-caret-position="323">
               <caret line="21" column="41" selection-start-line="21" selection-start-column="41" selection-end-line="21" selection-end-column="41" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
@@ -49,7 +57,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/models/tracker.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
+            <state relative-caret-position="816">
               <caret line="49" column="32" selection-start-line="49" selection-start-column="32" selection-end-line="49" selection-end-column="32" />
               <folding>
                 <element signature="e#0#37#0" expanded="true" />
@@ -79,7 +87,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/app.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="724">
+            <state relative-caret-position="969">
               <caret line="66" column="36" selection-start-line="66" selection-start-column="36" selection-end-line="66" selection-end-column="36" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
@@ -91,7 +99,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/api/server.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
+            <state relative-caret-position="408">
               <caret line="27" column="69" selection-start-line="27" selection-start-column="69" selection-end-line="27" selection-end-column="69" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
@@ -105,18 +113,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="85">
               <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/api/controllers/tracker-controller.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1173">
-              <caret line="72" column="24" selection-start-line="72" selection-start-column="24" selection-end-line="72" selection-end-column="24" />
-              <folding>
-                <element signature="e#0#44#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -161,7 +157,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/mobile/package.json" />
         <option value="$PROJECT_DIR$/mobile/MobileProject/src/pages/home/home.scss" />
         <option value="$PROJECT_DIR$/mobile/MobileProject/src/pages/home/home.ts" />
         <option value="$PROJECT_DIR$/mobile/MobileProject/src/pages/home/home.html" />
@@ -212,6 +207,7 @@
         <option value="$PROJECT_DIR$/server/api/server.ts" />
         <option value="$PROJECT_DIR$/server/api/models/email.ts" />
         <option value="$PROJECT_DIR$/server/api/controllers/email-controller.ts" />
+        <option value="$PROJECT_DIR$/server/api/controllers/login-controller.ts" />
       </list>
     </option>
   </component>
@@ -228,6 +224,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -291,7 +288,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -370,7 +366,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="220674000" />
+    <option name="totallyTimeSpent" value="223657000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -384,8 +380,8 @@
   <component name="ToolWindowManager">
     <frame x="-6" y="27" width="1932" height="1034" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49588138" visible="true" weight="0.33865815" />
-      <window_info id="Structure" order="1" sideWeight="0.5041186" side_tool="true" visible="true" weight="0.33865815" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49093905" visible="true" weight="0.34984025" />
+      <window_info id="Structure" order="1" sideWeight="0.509061" side_tool="true" visible="true" weight="0.34984025" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
       <window_info id="UI Designer" order="4" />
@@ -464,15 +460,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/api/controllers/login-controller.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -579,7 +566,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/app.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
+        <state relative-caret-position="969">
           <caret line="66" column="36" selection-start-line="66" selection-start-column="36" selection-end-line="66" selection-end-column="36" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
@@ -589,7 +576,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/server.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
+        <state relative-caret-position="408">
           <caret line="27" column="69" selection-start-line="27" selection-start-column="69" selection-end-line="27" selection-end-column="69" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
@@ -599,7 +586,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/models/tracker.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
+        <state relative-caret-position="816">
           <caret line="49" column="32" selection-start-line="49" selection-start-column="32" selection-end-line="49" selection-end-column="32" />
           <folding>
             <element signature="e#0#37#0" expanded="true" />
@@ -616,7 +603,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/controllers/email-controller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
+        <state relative-caret-position="323">
           <caret line="21" column="41" selection-start-line="21" selection-start-column="41" selection-end-line="21" selection-end-column="41" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
@@ -626,10 +613,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/controllers/history-controller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3196">
-          <caret line="188" column="23" selection-start-line="188" selection-start-column="23" selection-end-line="188" selection-end-column="23" />
+        <state relative-caret-position="419">
+          <caret line="182" column="70" selection-start-line="182" selection-start-column="70" selection-end-line="182" selection-end-column="70" />
           <folding>
             <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/api/controllers/login-controller.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="18" selection-start-line="20" selection-start-column="18" selection-end-line="20" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
           </folding>
         </state>
       </provider>
