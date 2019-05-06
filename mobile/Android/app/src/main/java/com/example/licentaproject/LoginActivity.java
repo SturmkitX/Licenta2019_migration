@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void logUserIn(View view) {
-        String username = ((EditText) findViewById(R.id.emailField)).getText().toString();
+        String username = ((EditText) findViewById(R.id.firstNameLabel)).getText().toString();
         String password = ((EditText) findViewById(R.id.passField)).getText().toString();
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -43,6 +43,11 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("password", password);
 
         new RequestTask(this).execute(username, password);
+    }
+
+    public void registerUser(View view) {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     private class RequestTask extends AsyncTask<String, Void, AuthResponse> {

@@ -6,6 +6,11 @@
 
 3. (to see processes) docker ps [-a]
 
+# Mongo commands
+Dump: mongodump -d <database_name> -o <directory_backup>
+Restore: mongorestore -d <database_name> <directory_backup>
+
+
 # TODO list
 # Server
 -[X] MongoDB support

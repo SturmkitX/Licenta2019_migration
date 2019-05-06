@@ -2,21 +2,23 @@
 #include "ArduinoJson.h"
 #include "sha256.h"
 #include "MemoryFree.h"
+#include "TinyGPS++.h"
 #include <string.h>
 
 // Emulate Serial1 on pins 6/7 if not present
 #ifndef HAVE_HWSERIAL1
 #include "SoftwareSerial.h"
 SoftwareSerial Serial1(6, 7); // RX, TX
+SoftwareSerial Serial2(3, 4);
 #endif
 
 #define MAX_CLIENT_BUF 15
 #define MAX_BAN_SIZE 16
 #define MAX_UPDATE_TIMEOUT 30000       // should be increased, but a low value is needed for testing
 #define AUTO_UPDATE_INTERVAL 10000
-#define SCAN_INTERVAL 300000
+#define SCAN_INTERVAL 10000
 
-#define SERVER_ADDRESS "192.168.0.103"
+#define SERVER_ADDRESS "192.168.0.105"
 #define SERVER_PORT 3000
 
 typedef struct
@@ -49,6 +51,8 @@ bool wifiConnected = false;
 
 WiFiEspServer server(80);
 WiFiEspClass manager;
+
+TinyGPSPlus gps;
 
 void computeSsid(char ssid[], byte hash[])
 {
@@ -134,6 +138,7 @@ void setup()
 {
     Serial.begin(115200);  // initialize serial for debugging
     Serial1.begin(115200); // initialize serial for ESP module
+    Serial2.begin(9600);    // initialize serial for GPS module
     WiFi.init(&Serial1);   // initialize ESP module
 
     // check for the presence of the shield
@@ -347,14 +352,13 @@ void prepareJSON(JsonDocument& data)
         }
     }
 
-    if (gpsConnected)
+    if (gps.location.isUpdated())
     {
-        // add some mock values
         JsonObject gpsObj = posArray.createNestedObject();
         gpsObj["source"] = "GPS";
 
-        gpsObj["latitude"] = 22.06;
-        gpsObj["longitude"] = 15.345;
+        gpsObj["latitude"] = gps.location.lat();
+        gpsObj["longitude"] = gps.location.lng();
     }
 }
 
@@ -366,6 +370,11 @@ void loop()
         if (espDrv.getConnectionStatus() != WL_CONNECTED)
             wifiConnected = connectWifi();
         lastScan = millis();
+    }
+
+    while (Serial2.available() > 0)
+    {
+        gps.encode(Serial2.read());
     }
 
     // only perform updates if we are connected and periodically
@@ -501,6 +510,7 @@ void loop()
             manager.disconnect();
             wifiConnected = false;
             configured = true;
+            lastUpdate = millis();
         }
         else
         if (doc["action"] == "POS_UPDATE")

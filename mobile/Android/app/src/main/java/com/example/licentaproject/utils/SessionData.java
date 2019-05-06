@@ -16,8 +16,8 @@ public class SessionData {
         ATTEMPT_UPDATE
     }
 
-    private static final String serverUrl = "192.168.0.100:3000";
-    private static final String pingUrl = "192.168.0.100";
+    private static final String serverUrl = "192.168.0.105:3000";
+    private static final String pingUrl = "192.168.0.105";
     private static String token = null;
     private static User user = null;
     private static Circle activeTracker = null;    // used for map discovery

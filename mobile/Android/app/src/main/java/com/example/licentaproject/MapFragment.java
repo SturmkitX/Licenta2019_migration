@@ -82,6 +82,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     private IntentFilter[] nfcIntentFilters;
     private String[][] nfcTechList;
 
+    private Context lostTrackerContext;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -147,9 +149,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        lostTrackerContext = getContext();
 
         mMap.setOnCircleClickListener(this);
-        new LostTrackerTask(mMap, getContext()).execute();
+        new LostTrackerTask(mMap, lostTrackerContext).execute();
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -449,6 +452,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 Log.d("POS_QUERY_SERVER", response.toString());
                 SessionData.setConfigStep(SessionData.ConfigStep.IDLE);
                 SessionData.setActiveTracker(null);
+
+                new LostTrackerTask(mMap, lostTrackerContext).execute();
             }
 
         }

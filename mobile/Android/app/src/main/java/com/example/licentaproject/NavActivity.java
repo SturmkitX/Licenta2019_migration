@@ -162,16 +162,22 @@ public class NavActivity extends AppCompatActivity {
 
 //        Location lastLocation = SessionData.getLastLocation();
         LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        @SuppressLint("MissingPermission") Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (lastLocation == null) {
-            lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        @SuppressLint("MissingPermission") Location fineLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (fineLocation != null) {
+            Map<String, Object> fineGpsList = new HashMap<>();
+            fineGpsList.put("source", "GPS");
+            fineGpsList.put("latitude", fineLocation.getLatitude());
+            fineGpsList.put("longitude", fineLocation.getLongitude());
+            posList.add(fineGpsList);
         }
-        if (lastLocation != null) {
-            Map<String, Object> gpsList = new HashMap<>();
-            gpsList.put("source", "GPS");
-            gpsList.put("latitude", lastLocation.getLatitude());
-            gpsList.put("longitude", lastLocation.getLongitude());
-            posList.add(gpsList);
+
+        @SuppressLint("MissingPermission") Location coarseLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (coarseLocation == null) {
+            Map<String, Object> coarseGpsList = new HashMap<>();
+            coarseGpsList.put("source", "COARSE");
+            coarseGpsList.put("latitude", coarseLocation.getLatitude());
+            coarseGpsList.put("longitude", coarseLocation.getLongitude());
+            posList.add(coarseGpsList);
         }
 
         posList.add(wifiList);

@@ -16,7 +16,7 @@ export class TrackerRoutes {
         // ADMIN routes
         app.route('/resource/tracker')
             .get(this.guard.check('ADMIN'), this.controller.getAll)
-            .post(this.guard.check('ADMIN'), this.controller.saveTracker)
+            .post(this.guard.check([['ADMIN'], ['USER']]), this.controller.saveTracker)
             .put(this.controller.updateOwnTracker);     // should be refactored
 
         app.route('/resource/tracker/:trackerId')

@@ -11,6 +11,7 @@ export class HistoryController{
     private wpsService: WpsService;
 
     private readonly WPS_WEIGHT = 0.7;
+    private readonly GPS_FINE_WEIGHT = 0.8;
 
     constructor() {
         this.wpsService = new WpsService();
@@ -100,6 +101,7 @@ export class HistoryController{
     private prepareHistory(positions, trackerId, method : string): HistoryInterm {
         let wifiPosition: HistoryInterm = null;
         let gpsPosition: HistoryInterm = null;
+        let coarsePosition: HistoryInterm = null;
         let interpResult: HistoryInterm = null;
         for (let position of positions) {
             if (position.source === 'WIFI' && method.includes('WPS')) {
@@ -121,10 +123,25 @@ export class HistoryController{
                     trackerId: trackerId,
                     lat: position.latitude,
                     lng: position.longitude,
-                    range: 50,   // mock
+                    range: 15,
+                    source: 'GPS'
+                };
+            } else if (position.source === 'COARSE' && method.includes('GPS')) {
+                coarsePosition = {
+                    trackerId: trackerId,
+                    lat: position.latitude,
+                    lng: position.longitude,
+                    range: 20,
                     source: 'GPS'
                 };
             }
+        }
+
+        if (gpsPosition && coarsePosition) {
+            gpsPosition.lat = gpsPosition.lat * this.GPS_FINE_WEIGHT + coarsePosition.lat * (1.0 - this.GPS_FINE_WEIGHT);
+            gpsPosition.lng = gpsPosition.lng * this.GPS_FINE_WEIGHT + coarsePosition.lng * (1.0 - this.GPS_FINE_WEIGHT);
+        } else if (!gpsPosition && coarsePosition) {
+            gpsPosition = coarsePosition;
         }
 
         // check exclusions

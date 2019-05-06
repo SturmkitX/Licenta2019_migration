@@ -15,8 +15,7 @@ export class UserRoutes {
     public applyRoutes(app: Application): void {
         // ADMIN routes
         app.route('/resource/user')
-            .get(this.guard.check('ADMIN'), this.controller.getAll)
-            .post(this.guard.check('ADMIN'), this.controller.saveUser);
+            .get(this.guard.check('ADMIN'), this.controller.getAll);
 
         app.route('/resource/user/:userId')
             .get(this.guard.check('ADMIN'), this.controller.getSpecificUser);
