@@ -9,22 +9,23 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/trackerView"
         android:layout_width="293dp"
-        android:layout_height="313dp"
+        android:layout_height="428dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.33" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addTrackerBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="480dp"
-        android:layout_marginEnd="112dp"
-        android:layout_marginRight="112dp"
+        android:layout_marginTop="556dp"
+        android:layout_marginEnd="72dp"
         android:clickable="true"
         android:elevation="2dp"
-        android:src="@drawable/common_google_signin_btn_icon_dark"
+        android:src="@drawable/ic_add_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -23,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RegisterActivity">
+        <activity android:name=".RegisterActivity"
+            android:label="@string/title_activity_register">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.licentaproject.LoginActivity" />
@@ -61,6 +62,7 @@
         </activity>
         <activity
             android:name=".TrackerAddActivity"
+            android:label="@string/title_activity_tracker_add"
             android:parentActivityName=".NavActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -69,7 +71,8 @@
         <activity
             android:name=".NavActivity"
             android:label="@string/title_activity_nav" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginActivity"
+            android:label="@string/title_activity_login"/>
     </application>
 
 </manifest>

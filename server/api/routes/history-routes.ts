@@ -16,7 +16,7 @@ export class HistoryRoutes {
         // ADMIN routes
         app.route('/resource/history')
             .get(this.guard.check('ADMIN'), this.controller.getAll)
-            .post(this.guard.check('ADMIN'), this.controller.saveHistory.bind(this.controller));
+            .post(this.guard.check([['ADMIN'], ['USER']]), this.controller.saveHistory.bind(this.controller));
 
         app.route('/resource/history/:historyId')
             .get(this.guard.check('ADMIN'), this.controller.getSpecific);
@@ -25,7 +25,7 @@ export class HistoryRoutes {
 
         // USER + ADMIN routes
         app.route('/resource/me/history/:trackerId')
-            .get(this.controller.getSelfForTracker);
+            .get(this.guard.check([['ADMIN'], ['USER']]), this.controller.getSelfForTracker);
 
         // public routes
         app.route('/public/history')

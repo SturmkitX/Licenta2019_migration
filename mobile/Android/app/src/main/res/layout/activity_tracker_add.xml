@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/detectStatus"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Make sure NFC is enabled and get close to the RFID"
         android:textSize="30dp"

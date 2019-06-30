@@ -69,8 +69,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     private MapView mapView;
     private LocationManager locationManager;
 
-    private TextView mapUserField;
-    private ToggleButton mapStatusField;
     private Button connectWifiBtn;
 
     private BroadcastReceiver networkReceiver;
@@ -113,8 +111,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
-        mapUserField = view.findViewById(R.id.mapUserField);
-        mapStatusField = view.findViewById(R.id.mapStatusField);
         connectWifiBtn = view.findViewById(R.id.connectWifiBtn);
 
         connectWifiBtn.setOnClickListener(this);

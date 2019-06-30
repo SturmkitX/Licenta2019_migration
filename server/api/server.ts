@@ -13,7 +13,7 @@ export class Server {
     constructor() {
         // this.app = new Application();
         this.setupApp();
-        this.startCleaner();
+        // this.startCleaner();
     }
 
     private setupApp(): void {
