@@ -168,6 +168,7 @@ public class NavActivity extends AppCompatActivity {
             fineGpsList.put("source", "GPS");
             fineGpsList.put("latitude", fineLocation.getLatitude());
             fineGpsList.put("longitude", fineLocation.getLongitude());
+            fineGpsList.put("range", fineLocation.getAccuracy());
             posList.add(fineGpsList);
         }
 
@@ -177,6 +178,7 @@ public class NavActivity extends AppCompatActivity {
             coarseGpsList.put("source", "COARSE");
             coarseGpsList.put("latitude", coarseLocation.getLatitude());
             coarseGpsList.put("longitude", coarseLocation.getLongitude());
+            coarseGpsList.put("range", coarseLocation.getAccuracy());
             posList.add(coarseGpsList);
         }
 

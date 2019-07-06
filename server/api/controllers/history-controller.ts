@@ -5,16 +5,19 @@ import {DecodedPosition, HistoryInterm} from "../models/history-interm";
 import {WpsService} from "../services/wps-service";
 import {FindLog} from "../models/find-log";
 import {User} from "../models/user";
+import {EmailService} from "../services/email-service";
 
 export class HistoryController{
 
     private wpsService: WpsService;
+    private emailService: EmailService;
 
     private readonly WPS_WEIGHT = 0.7;
     private readonly GPS_FINE_WEIGHT = 0.8;
 
     constructor() {
         this.wpsService = new WpsService();
+        this.emailService = new EmailService();
     }
 
     /* ADMIN specific methods */
@@ -53,7 +56,7 @@ export class HistoryController{
 
         // get the associated tracker
         Tracker.findOne({rfId: req.body.rfId}, (err, tracker) => {
-            if (tracker == null) {
+            if (err || tracker == null) {
                 res.status(404).send(err);
                 return;
             } else {
@@ -107,13 +110,13 @@ export class HistoryController{
             if (position.source === 'WIFI' && method.includes('WPS')) {
                 // get the list of macs and their rssi
                 let decodedData: DecodedPosition = this.wpsService.getPosition(position.macs);
-                console.log('WPS data result: ' + decodedData.result);
-                if (decodedData.result == 200) {
+                console.log('Valid position computed: ', decodedData != null);
+                if (decodedData) {
                     wifiPosition = {
                         trackerId: trackerId,
-                        lat: decodedData.data.lat,
-                        lng: decodedData.data.lon,
-                        range: decodedData.data.range,
+                        lat: decodedData.location.lat,
+                        lng: decodedData.location.lng,
+                        range: decodedData.accuracy,
                         source: 'WIFI'
                     };
                 }
@@ -123,7 +126,7 @@ export class HistoryController{
                     trackerId: trackerId,
                     lat: position.latitude,
                     lng: position.longitude,
-                    range: 15,
+                    range: position.range || 30,
                     source: 'GPS'
                 };
             } else if (position.source === 'COARSE' && method.includes('GPS')) {
@@ -131,16 +134,14 @@ export class HistoryController{
                     trackerId: trackerId,
                     lat: position.latitude,
                     lng: position.longitude,
-                    range: 20,
+                    range: position.range || 20,
                     source: 'GPS'
                 };
             }
         }
 
-        if (gpsPosition && coarsePosition) {
-            gpsPosition.lat = gpsPosition.lat * this.GPS_FINE_WEIGHT + coarsePosition.lat * (1.0 - this.GPS_FINE_WEIGHT);
-            gpsPosition.lng = gpsPosition.lng * this.GPS_FINE_WEIGHT + coarsePosition.lng * (1.0 - this.GPS_FINE_WEIGHT);
-        } else if (!gpsPosition && coarsePosition) {
+        if ((gpsPosition && coarsePosition && gpsPosition.range > coarsePosition.range * 1.5) ||
+            (!gpsPosition && coarsePosition)) {
             gpsPosition = coarsePosition;
         }
 
@@ -175,6 +176,7 @@ export class HistoryController{
                 res.status(500).send(err);
             } else {
                 // update the parent tracker
+                console.log(entry);
 
                 // @ts-ignore
                 Tracker.findByIdAndUpdate(entry.trackerId, {$push: {history: entry._id}, lastUpdated: entry.creationDate,
@@ -201,6 +203,8 @@ export class HistoryController{
 
                                 // create a mail object, push it to the db
                                 // then let a timer task send all emails at once
+                                // @ts-ignore
+                                this.emailService.saveEmail(tracker.userId, interm.trackerId, user.id);
                             }
                         }
                     });

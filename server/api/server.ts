@@ -1,7 +1,7 @@
 import {default as Application} from "./app";
 import {Tracker} from "./models/tracker";
 import Timeout = NodeJS.Timeout;
-import {EmailController} from "./controllers/email-controller";
+import {EmailService} from "./services/email-service";
 const PORT = 3000;
 
 export class Server {
@@ -13,7 +13,7 @@ export class Server {
     constructor() {
         // this.app = new Application();
         this.setupApp();
-        // this.startCleaner();
+        this.startCleaner();
     }
 
     private setupApp(): void {
@@ -25,8 +25,8 @@ export class Server {
     private startCleaner(): void {
         // disable to save power for now
         // const timer: Timeout = setInterval(this.updateLost, this.TIMER_TIMEOUT, this.MAX_UPDATE_TIMEOUT);
-        const EmailTimer: Timeout = setTimeout(this.sendTestEmail, 10000);
-
+        const emailService: EmailService = new EmailService();
+        const timer2: Timeout = setInterval(emailService.sendEmail.bind(emailService), 20000, 60000);
     }
 
     private updateLost(timeout: number): void {
@@ -40,16 +40,6 @@ export class Server {
                 console.log(docs);
             }
         });
-    }
-
-    private sendTestEmail() {
-        console.log('Sending test email...');
-        new EmailController().saveEmail('5c718f6b300e3206c82b2450', '5c79cc9c3971cc29d3d06031','5c62e3a802cf281461b308d3')
-            .then(value => {
-                console.log('Received email value:');
-                console.log(value);
-            })
-
     }
 }
 

@@ -14,9 +14,9 @@ SoftwareSerial Serial2(3, 4);
 
 #define MAX_CLIENT_BUF 15
 #define MAX_BAN_SIZE 16
-#define MAX_UPDATE_TIMEOUT 30000       // should be increased, but a low value is needed for testing
-#define AUTO_UPDATE_INTERVAL 10000
-#define SCAN_INTERVAL 10000
+#define MAX_UPDATE_TIMEOUT 300000       // should be increased, but a low value is needed for testing
+#define AUTO_UPDATE_INTERVAL 120000
+#define SCAN_INTERVAL 20000
 
 #define SERVER_ADDRESS "192.168.0.105"
 #define SERVER_PORT 3000
@@ -37,14 +37,14 @@ bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
 byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8] = {/*{"Baietii 108", "shonstieparola"}*/}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
-byte apInfoSize = 0;
+ApInfo apInfo[8] = {{"Baietii 108", "shonstieparola"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+byte apInfoSize = 1;
 char bannedAp[MAX_BAN_SIZE][32] = {};
 int banIndex = 1;
 unsigned long lastScan;
 unsigned long lastUpdate;
 unsigned long autoLastUpdate;
-bool gpsConnected = true;
+bool gpsConnected = false;
 uint8_t scannedNetworks;
 
 bool wifiConnected = false;
@@ -359,6 +359,7 @@ void prepareJSON(JsonDocument& data)
 
         gpsObj["latitude"] = gps.location.lat();
         gpsObj["longitude"] = gps.location.lng();
+        gpsObj["range"] = gps.hdop.value() * 2.5f;
     }
 }
 
@@ -507,8 +508,8 @@ void loop()
                 client.print("ACK\n");
 
             // disconnect from the current AP, needed for testing purposes
-            manager.disconnect();
-            wifiConnected = false;
+            // manager.disconnect();
+            // wifiConnected = false;
             configured = true;
             lastUpdate = millis();
         }

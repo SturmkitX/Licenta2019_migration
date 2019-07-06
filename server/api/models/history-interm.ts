@@ -7,15 +7,13 @@ class HistoryInterm {
 }
 
 class DecodedPosition {
-    public result: number;
-    public data: DecodedData;
+    public location: DecodedData;
+    public accuracy: number;
 }
 
 class DecodedData {
     public lat: number;
-    public lon: number;
-    public range: number;
-    public time: number;
+    public lng: number;
 }
 
 export {HistoryInterm, DecodedPosition};

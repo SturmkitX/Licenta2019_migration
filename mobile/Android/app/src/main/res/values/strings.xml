@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LicentaProject</string>
+    <string name="app_name">Tracker Mobile</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -100,4 +100,6 @@
     <string name="title_activity_login">Log In</string>
     <string name="title_activity_tracker_add">Add Tracker</string>
     <string name="title_activity_register">Register</string>
+    <string name="title_activity_settings_sync">Settings sync</string>
+    <string name="title_activity_permission">Grant permissions</string>
 </resources>

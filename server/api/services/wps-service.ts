@@ -4,23 +4,21 @@ import * as XMLHttp from 'xmlhttprequest';
 export class WpsService {
     constructor() {}
 
-    private serverAddr: string = 'https://api.mylnikov.org/geolocation/wifi?v=1.1&data=open&search=';
+    private serverAddr: string = 'https://cps.combain.com?key=a7kyy6rye56jpke2nmm3';
 
     public getPosition(stations: any): DecodedPosition {
-        let rawData = '';
+        let rawData = [];
         for (let station of stations) {
-            rawData += (station.mac + ',' + station.rssi + ';');
+            rawData.push({macAddress: station.mac, signalStrength: station.rssi});
         }
-        rawData = rawData.slice(0, rawData.length - 1);
         console.log('WPS raw data: ' + rawData);
-        const encodedData = Buffer.from(rawData).toString('base64');
 
         console.log('Requesting location...');
         let request = new XMLHttp.XMLHttpRequest();
-        request.open("GET", `${this.serverAddr}${encodedData}`, false);
-        request.send();
+        request.open("POST", this.serverAddr, false);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify({wifiAccessPoints: rawData}));
 
-        console.log(`Request URL: http://api.mylnikov.org/geolocation/wifi?v=1.1&data=open&search=${encodedData}`);
         console.log(`Response: ${request.responseText}`);
         const position: DecodedPosition = JSON.parse(request.responseText);
         return position;
