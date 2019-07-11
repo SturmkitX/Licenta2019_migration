@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="textPersonName"
+                    android:inputType="text"
                     android:text="Name" />
 
             </LinearLayout>
@@ -102,7 +102,8 @@
                     android:id="@+id/gpsView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:clickable="false" />
 
             </LinearLayout>
 
@@ -122,7 +123,8 @@
                     android:id="@+id/wifiView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:clickable="false" />
 
             </LinearLayout>
 
@@ -143,7 +145,8 @@
                     android:id="@+id/alarmView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:clickable="false" />
             </LinearLayout>
 
             <LinearLayout
@@ -212,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="textPersonName" />
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/trackerPass0"
@@ -240,7 +243,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="textPersonName" />
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/trackerPass1"

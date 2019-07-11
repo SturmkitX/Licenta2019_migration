@@ -72,4 +72,26 @@ export class UserController{
                 }
             });
     }
+
+    public updateSelf(req: Request, res: Response) {
+        // @ts-ignore
+        if (!req.user || !req.user.id) {
+            res.status(403).send('You are not logged in');
+            return;
+        }
+
+        if (req.body.password == null) {
+            delete req.body.password;
+        }
+
+        // @ts-ignore
+        User.updateOne({_id: req.user.id}, req.body, (err, user) => {
+            if (err) {
+                res.status(404).send(err);
+            } else {
+                // user successfully updated
+                res.status(200).json(user);
+            }
+        });
+    }
 }

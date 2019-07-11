@@ -18,6 +18,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.licentaproject.models.APPreference;
 import com.example.licentaproject.models.Tracker;
 import com.example.licentaproject.utils.SyncUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SettingsSyncActivity extends AppCompatActivity {
@@ -117,7 +120,14 @@ public class SettingsSyncActivity extends AppCompatActivity {
                 socket.connect(new InetSocketAddress("192.168.4.1", 80), 10000);
                 comm.put("action", "AP_UPDATE");
                 comm.put("id", tracker.getRfId());
-                comm.put("apList", tracker.getAps());
+
+                List<APPreference> filteredAps = new ArrayList<>();
+                for (APPreference pref : tracker.getAps()) {
+                    if (pref.isActive()) {
+                        filteredAps.add(pref);
+                    }
+                }
+                comm.put("apList", filteredAps);
 
                 ObjectMapper mapper = new ObjectMapper();
                 byte[] msg = mapper.writeValueAsBytes(comm);

@@ -34,9 +34,13 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
     private Spinner methodView;
     private Button updateBtn;
 
-    private EditText trackerSsid;
-    private EditText trackerPass;
-    private CheckBox trackerSsidActive;
+    private EditText trackerSsid0;
+    private EditText trackerPass0;
+    private CheckBox trackerSsidActive0;
+
+    private EditText trackerSsid1;
+    private EditText trackerPass1;
+    private CheckBox trackerSsidActive1;
 
     private Tracker tracker;
     final List<String> methodOptions = Arrays.asList("WPS + GPS", "WPS Only", "GPS Only", "None");
@@ -55,9 +59,13 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
         methodView = (Spinner) findViewById(R.id.methodView);
         updateBtn = (Button) findViewById(R.id.updateBtn);
 
-        trackerSsid = (EditText) findViewById(R.id.trackerSsid0);
-        trackerPass = (EditText) findViewById(R.id.trackerPass0);
-        trackerSsidActive = (CheckBox) findViewById(R.id.trackerActive0);
+        trackerSsid0 = (EditText) findViewById(R.id.trackerSsid0);
+        trackerPass0 = (EditText) findViewById(R.id.trackerPass0);
+        trackerSsidActive0 = (CheckBox) findViewById(R.id.trackerActive0);
+
+        trackerSsid1 = (EditText) findViewById(R.id.trackerSsid1);
+        trackerPass1 = (EditText) findViewById(R.id.trackerPass1);
+        trackerSsidActive1 = (CheckBox) findViewById(R.id.trackerActive1);
 
         methodView.setOnItemSelectedListener(this);
         updateBtn.setOnClickListener(this);
@@ -70,6 +78,20 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
         gpsView.setChecked(tracker.isGpsActive());
         wifiView.setChecked(tracker.isWifiActive());
         alarmView.setChecked(tracker.isAlarmActive());
+
+        if (tracker.getAps().size() > 0) {
+            APPreference ap = tracker.getAps().get(0);
+            trackerSsid0.setText(ap.getSsid());
+            trackerPass0.setText(ap.getPassword());
+            trackerSsidActive0.setChecked(ap.isActive());
+        }
+
+        if (tracker.getAps().size() > 1) {
+            APPreference ap = tracker.getAps().get(1);
+            trackerSsid1.setText(ap.getSsid());
+            trackerPass1.setText(ap.getPassword());
+            trackerSsidActive1.setChecked(ap.isActive());
+        }
 
         methodView.setSelection(methodOptions.indexOf(tracker.getPreferredMethod()));
 
@@ -94,11 +116,19 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
         // update AP list
         List<APPreference> newAps = new ArrayList<>();
         APPreference pref = new APPreference();
-        pref.setSsid(trackerSsid.getEditableText().toString());
-        pref.setPassword(trackerPass.getEditableText().toString());
-        pref.setActive(trackerSsidActive.isChecked());
+        pref.setSsid(trackerSsid0.getEditableText().toString());
+        pref.setPassword(trackerPass0.getEditableText().toString());
+        pref.setActive(trackerSsidActive0.isChecked());
 
-        if (!pref.getSsid().isEmpty() && pref.isActive()) {
+        if (!pref.getSsid().isEmpty()) {
+            newAps.add(pref);
+        }
+
+        pref = new APPreference();
+        pref.setSsid(trackerSsid1.getText().toString());
+        pref.setPassword(trackerPass1.getText().toString());
+        pref.setActive(trackerSsidActive1.isChecked());
+        if (!pref.getSsid().isEmpty()) {
             newAps.add(pref);
         }
         tracker.setAps(newAps);

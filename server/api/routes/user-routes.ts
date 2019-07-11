@@ -23,6 +23,7 @@ export class UserRoutes {
 
         // USER + ADMIN routes
         app.route('/resource/me/user')
-            .get(this.controller.getSelf);
+            .get(this.guard.check([['ADMIN'], ['USER']]), this.controller.getSelf)
+            .put(this.guard.check([['ADMIN'], ['USER']]), this.controller.updateSelf);
     }
 }

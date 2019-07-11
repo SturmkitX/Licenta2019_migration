@@ -14,9 +14,9 @@ SoftwareSerial Serial2(3, 4);
 
 #define MAX_CLIENT_BUF 15
 #define MAX_BAN_SIZE 16
-#define MAX_UPDATE_TIMEOUT 300000       // should be increased, but a low value is needed for testing
-#define AUTO_UPDATE_INTERVAL 120000
-#define SCAN_INTERVAL 20000
+#define MAX_UPDATE_TIMEOUT 60000       // should be increased, but a low value is needed for testing
+#define AUTO_UPDATE_INTERVAL 30000
+#define SCAN_INTERVAL 15000
 
 #define SERVER_ADDRESS "192.168.0.105"
 #define SERVER_PORT 3000
@@ -37,13 +37,15 @@ bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
 byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8] = {{"Baietii 108", "shonstieparola"}}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
-byte apInfoSize = 1;
+ApInfo apInfo[8] = {/*{"Baietii 108", "shonstieparola"}*/}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+byte apInfoSize = 0;
 char bannedAp[MAX_BAN_SIZE][32] = {};
 int banIndex = 1;
 unsigned long lastScan;
 unsigned long lastUpdate;
 unsigned long autoLastUpdate;
+
+int nmeaRead = 0;
 bool gpsConnected = false;
 uint8_t scannedNetworks;
 
@@ -361,6 +363,11 @@ void prepareJSON(JsonDocument& data)
         gpsObj["longitude"] = gps.location.lng();
         gpsObj["range"] = gps.hdop.value() * 2.5f;
     }
+
+    JsonObject propObj = data.createNestedObject("properties");
+    propObj["lost"] = lost;
+    propObj["wifiActive"] = wifiConnected;
+    propObj["gpsActive"] = gpsConnected;
 }
 
 void loop()
@@ -375,8 +382,12 @@ void loop()
 
     while (Serial2.available() > 0)
     {
+        nmeaRead++;
         gps.encode(Serial2.read());
     }
+    
+    gpsConnected = (nmeaRead > 0) ? true : false;
+    nmeaRead = 0;
 
     // only perform updates if we are connected and periodically
     if (millis() - autoLastUpdate >= AUTO_UPDATE_INTERVAL)
@@ -419,7 +430,7 @@ void loop()
         autoLastUpdate = millis();
     }
 
-    if (configured && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT)
+    if (configured && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT && !lost)
     {
         lost = true;
         Serial.println("The AP is now lost and visible");
@@ -512,6 +523,7 @@ void loop()
             // wifiConnected = false;
             configured = true;
             lastUpdate = millis();
+            manager.disconnect();
         }
         else
         if (doc["action"] == "POS_UPDATE")

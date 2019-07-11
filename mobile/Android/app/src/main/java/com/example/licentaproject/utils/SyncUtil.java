@@ -139,8 +139,10 @@ public class SyncUtil {
         Log.d("CONF_INFO_LEN", "" + confList.size());
         for (WifiConfiguration conf : confList) {
             Log.d("CONF_INFO", String.format("%d %s %s", conf.networkId, conf.SSID, WifiConfiguration.Status.strings[conf.status]));
+//            manager.disableNetwork(conf.networkId);
             manager.removeNetwork(conf.networkId);
         }
+        manager.saveConfiguration();
 
         WifiConfiguration conf = new WifiConfiguration();
         Log.d("ADD_NETWORK_IS_HIDDEN", "" + isHidden);
