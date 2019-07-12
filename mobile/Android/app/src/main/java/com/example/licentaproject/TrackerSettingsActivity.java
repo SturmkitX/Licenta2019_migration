@@ -30,7 +30,6 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
     private CheckBox lostView;
     private CheckBox gpsView;
     private CheckBox wifiView;
-    private CheckBox alarmView;
     private Spinner methodView;
     private Button updateBtn;
 
@@ -55,7 +54,6 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
         lostView = (CheckBox) findViewById(R.id.lostView);
         gpsView = (CheckBox) findViewById(R.id.gpsView);
         wifiView = (CheckBox) findViewById(R.id.wifiView);
-        alarmView = (CheckBox) findViewById(R.id.alarmView);
         methodView = (Spinner) findViewById(R.id.methodView);
         updateBtn = (Button) findViewById(R.id.updateBtn);
 
@@ -77,7 +75,6 @@ public class TrackerSettingsActivity extends AppCompatActivity implements Adapte
         lostView.setChecked(tracker.isLost());
         gpsView.setChecked(tracker.isGpsActive());
         wifiView.setChecked(tracker.isWifiActive());
-        alarmView.setChecked(tracker.isAlarmActive());
 
         if (tracker.getAps().size() > 0) {
             APPreference ap = tracker.getAps().get(0);

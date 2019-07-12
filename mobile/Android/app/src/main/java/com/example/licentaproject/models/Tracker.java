@@ -15,7 +15,6 @@ public class Tracker implements Parcelable {
     private String id;
     private String name;
     private boolean lost;
-    private boolean alarmActive;
     private boolean wifiActive;
     private boolean gpsActive;
     private String preferredMethod;
@@ -39,7 +38,6 @@ public class Tracker implements Parcelable {
         id = in.readString();
         name = in.readString();
         lost = in.readByte() != 0;
-        alarmActive = in.readByte() != 0;
         wifiActive = in.readByte() != 0;
         gpsActive = in.readByte() != 0;
         preferredMethod = in.readString();
@@ -86,14 +84,6 @@ public class Tracker implements Parcelable {
 
     public void setLost(boolean lost) {
         this.lost = lost;
-    }
-
-    public boolean isAlarmActive() {
-        return alarmActive;
-    }
-
-    public void setAlarmActive(boolean alarmActive) {
-        this.alarmActive = alarmActive;
     }
 
     public boolean isWifiActive() {
@@ -186,7 +176,6 @@ public class Tracker implements Parcelable {
         dest.writeString(id);
         dest.writeString(name);
         dest.writeByte((byte)(lost ? 1 : 0));
-        dest.writeByte((byte)(alarmActive ? 1 : 0));
         dest.writeByte((byte)(wifiActive ? 1 : 0));
         dest.writeByte((byte)(gpsActive ? 1 : 0));
         dest.writeString(preferredMethod);

@@ -16,10 +16,6 @@ const TrackerSchema = new Schema({
         type: Boolean,
         default: false
     },
-    alarmActive: {
-        type: Boolean,
-        default: false
-    },
     gpsActive: {
         type: Boolean,
         default: false

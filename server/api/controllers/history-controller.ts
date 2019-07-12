@@ -54,6 +54,19 @@ export class HistoryController{
         console.log('History received!');
         console.log(req.body);
 
+        if (req.body.properties) {
+            // the history is sent from a tracker and contains data related to connected modules
+            Tracker.updateOne({rfId: req.body.rfId}, req.body.properties, (err, doc) => {
+                if (err) {
+                    console.log('Failed to update the tracker modules!');
+                    return;
+                } else {
+                    console.log('Tracker status updated!');
+                    console.log(doc);
+                }
+            });
+        }
+
         // get the associated tracker
         Tracker.findOne({rfId: req.body.rfId}, (err, tracker) => {
             if (err || tracker == null) {

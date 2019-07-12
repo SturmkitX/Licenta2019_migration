@@ -365,7 +365,10 @@ void prepareJSON(JsonDocument& data)
     }
 
     JsonObject propObj = data.createNestedObject("properties");
-    propObj["lost"] = lost;
+
+    // adding the lost field is redundant, as the smartphone only knows it from the server
+    // and the Arduino uses it for toggling the buzzer
+    // propObj["lost"] = lost;
     propObj["wifiActive"] = wifiConnected;
     propObj["gpsActive"] = gpsConnected;
 }
