@@ -74,6 +74,11 @@ export class TrackerController{
         const tracker = req.body;
         console.log('Original tracker: ');
         console.log(tracker);
+
+        if (tracker.hasOwnProperty('lastPosition')) {
+            delete tracker.lastPosition;
+        }
+
         Tracker.update({_id: tracker._id}, tracker, (err, trackerDoc) => {
             console.log('Tracker DOC after update:');
             console.log(trackerDoc);

@@ -277,7 +277,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         String apName = SyncUtil.computeSsid(tracker);
         String apPass = SyncUtil.computePassword(tracker);
 
-        // memorize active network connection
+//         memorize active network connection
         int netId = manager.getConnectionInfo().getNetworkId();
         for (WifiConfiguration conf : manager.getConfiguredNetworks()) {
             if (conf.networkId == netId) {

@@ -212,7 +212,8 @@ export class HistoryController{
                             console.log('User to recompense: ');
                             console.log(user);
 
-                            if (user) {
+                            // @ts-ignore
+                            if (user && tracker.userId != user.id) {
                                 // @ts-ignore
                                 entry.star = true;
                             }
@@ -222,7 +223,8 @@ export class HistoryController{
                             // then it is part of a community check
                             Tracker.findOneAndUpdate({_id: interm.trackerId}, {lost: false}).exec();
 
-                            if (user) {
+                            // @ts-ignore
+                            if (user && tracker.userId != user.id) {
                                 new FindLog({userId: user.id, trackerId: interm.trackerId}).save();
                                 User.findOneAndUpdate({_id: user.id}, {$inc: {stars: 1}}).exec();
 

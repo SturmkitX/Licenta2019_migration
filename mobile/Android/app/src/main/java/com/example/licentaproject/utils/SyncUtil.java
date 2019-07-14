@@ -172,7 +172,6 @@ public class SyncUtil {
             Log.d("ADD_NETWORK","Could not add Arduino\n");
             return false;
         }
-        int reconnectId = manager.getConnectionInfo().getNetworkId();
 
         if (manager.disconnect()) {
             Log.d("NET_DISCONNECT","Successfully disconnected from Original AP\n");
@@ -188,7 +187,7 @@ public class SyncUtil {
             Log.d("NET_ENABLE","Failed to enable AP\n");
             return false;
         }
-        manager.reconnect();
+//        manager.reconnect();
 
         return true;
     }

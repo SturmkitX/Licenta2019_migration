@@ -7,8 +7,8 @@ const PORT = 3000;
 export class Server {
 
     // private app: Application;
-    private readonly MAX_UPDATE_TIMEOUT = 30000;
-    private readonly TIMER_TIMEOUT = 10000;
+    private readonly MAX_UPDATE_TIMEOUT = 60000;
+    private readonly TIMER_TIMEOUT = 60000;
 
     constructor() {
         // this.app = new Application();
@@ -24,7 +24,7 @@ export class Server {
 
     private startCleaner(): void {
         // disable to save power for now
-        // const timer: Timeout = setInterval(this.updateLost, this.TIMER_TIMEOUT, this.MAX_UPDATE_TIMEOUT);
+        const timer: Timeout = setInterval(this.updateLost, this.TIMER_TIMEOUT, this.MAX_UPDATE_TIMEOUT);
         const emailService: EmailService = new EmailService();
         const timer2: Timeout = setInterval(emailService.sendEmail.bind(emailService), 20000, 60000);
     }

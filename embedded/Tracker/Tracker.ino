@@ -12,11 +12,12 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 SoftwareSerial Serial2(3, 4);
 #endif
 
-#define MAX_CLIENT_BUF 15
-#define MAX_BAN_SIZE 16
+#define MAX_BAN_SIZE 6
 #define MAX_UPDATE_TIMEOUT 60000       // should be increased, but a low value is needed for testing
 #define AUTO_UPDATE_INTERVAL 30000
 #define SCAN_INTERVAL 15000
+
+#define BUZZER_PIN 8
 
 #define SERVER_ADDRESS "192.168.0.105"
 #define SERVER_PORT 3000
@@ -36,8 +37,7 @@ bool lost = false;
 bool configured = false;
 short reqCount = 0;           // number of attempted server requests
 const short maxReqCount = 10; // max number of requests before the device is marked as lost
-byte clientBuf[MAX_CLIENT_BUF];
-ApInfo apInfo[8] = {/*{"Baietii 108", "shonstieparola"}*/}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
+ApInfo apInfo[2] = {/*{"Baietii 108", "shonstieparola"}*/}; // a device may have up to 8 predefined APs (for increasing the chance of finding a connectable AP)
 byte apInfoSize = 0;
 char bannedAp[MAX_BAN_SIZE][32] = {};
 int banIndex = 1;
@@ -436,6 +436,7 @@ void loop()
     if (configured && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT && !lost)
     {
         lost = true;
+        tone(BUZZER_PIN, 1000);
         Serial.println("The AP is now lost and visible");
 
         // set AP as visible
@@ -525,6 +526,8 @@ void loop()
             // manager.disconnect();
             // wifiConnected = false;
             configured = true;
+            lost = false;
+            noTone(BUZZER_PIN);
             lastUpdate = millis();
             manager.disconnect();
         }
@@ -556,6 +559,7 @@ void loop()
             StaticJsonDocument<400> info;
             prepareJSON(info);
             serializeJson(info, client);
+            noTone(BUZZER_PIN);
             lost = false;
 
             // set AP back to hidden
@@ -580,26 +584,6 @@ void loop()
     
 }
 
-void sendHttpResponse(WiFiEspClient client)
-{
-    client.print(
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/html\r\n"
-        "Connection: close\r\n" // the connection will be closed after completion of the response
-        "Refresh: 20\r\n"       // refresh the page automatically every 20 sec
-        "\r\n");
-    client.print("<!DOCTYPE HTML>\r\n");
-    client.print("<html>\r\n");
-    client.print("<h1>Hello World!</h1>\r\n");
-    client.print("Requests received: ");
-    client.print(++reqCount);
-    client.print("<br>\r\n");
-    client.print("Analog input A0: ");
-    client.print(analogRead(0));
-    client.print("<br>\r\n");
-    client.print("</html>\r\n");
-}
-
 void printWifiStatus()
 {
     // print your WiFi shield's IP address
@@ -607,11 +591,5 @@ void printWifiStatus()
     Serial.print("IP Address: ");
     Serial.println(ip);
 
-    // print where to go in the browser
-    Serial.println();
-    Serial.print("To see this page in action, connect to ");
-    Serial.print(ssid);
-    Serial.print(" and open a browser to http://");
-    Serial.println(ip);
     Serial.println();
 }
