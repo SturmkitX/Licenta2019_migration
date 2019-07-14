@@ -191,7 +191,6 @@ public class NavActivity extends AppCompatActivity {
             Log.d("NFC_SEND_VALUES", mapper.writeValueAsString(toSend));
 
             // send the updated values
-            SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_UPDATE);
             SessionData.getFoundPool().add(toSend);
 //            manager.reconnect();
         } catch (JsonProcessingException e) {

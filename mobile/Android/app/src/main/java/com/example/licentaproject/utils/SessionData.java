@@ -10,19 +10,12 @@ import java.util.List;
 
 public class SessionData {
 
-    public enum ConfigStep {
-        IDLE,
-        ATTEMPT_CONNECT,
-        ATTEMPT_UPDATE
-    }
-
     private static final String serverUrl = "192.168.0.105:3000";
     private static final String pingUrl = "192.168.0.105";
     private static String token = null;
     private static User user = null;
     private static Circle activeTracker = null;    // used for map discovery
     private static List<Object> foundPool = new ArrayList<>();
-    private static ConfigStep configStep = ConfigStep.IDLE;
     private static Location lastLocation = null;
 
     private SessionData() {
@@ -63,14 +56,6 @@ public class SessionData {
 
     public static String getPingUrl() {
         return pingUrl;
-    }
-
-    public static ConfigStep getConfigStep() {
-        return configStep;
-    }
-
-    public static void setConfigStep(ConfigStep configStep) {
-        SessionData.configStep = configStep;
     }
 
     public static Location getLastLocation() {

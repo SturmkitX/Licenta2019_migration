@@ -4,11 +4,9 @@
     <list default="true" id="69e2572d-6519-4be0-81a2-f9eacba7ca7c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/embedded/Tracker/Tracker.ino" beforeDir="false" afterPath="$PROJECT_DIR$/embedded/Tracker/Tracker.ino" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/MapFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SyncUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SyncUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/activity_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/res/layout/activity_login.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/history-controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/controllers/tracker-controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/NavActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/SettingsSyncActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/SettingsSyncActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/Android/app/src/main/java/com/example/licentaproject/utils/SessionData.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -95,7 +93,7 @@
         <entry file="file://$PROJECT_DIR$/server/api/server.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="336">
-              <caret line="40" column="13" lean-forward="true" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+              <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
               </folding>
@@ -106,8 +104,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/api/controllers/tracker-controller.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="85" column="31" selection-start-line="85" selection-start-column="31" selection-end-line="85" selection-end-column="31" />
+            <state relative-caret-position="255">
+              <caret line="87" column="37" selection-start-line="87" selection-start-column="37" selection-end-line="87" selection-end-column="37" />
               <folding>
                 <element signature="e#0#44#0" expanded="true" />
               </folding>
@@ -357,12 +355,12 @@
       <workItem from="1562349916112" duration="9091000" />
       <workItem from="1562863696564" duration="4788000" />
       <workItem from="1562974435218" duration="993000" />
-      <workItem from="1563026380664" duration="7094000" />
+      <workItem from="1563026380664" duration="7954000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="262378000" />
+    <option name="totallyTimeSpent" value="263238000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -613,7 +611,7 @@
     <entry file="file://$PROJECT_DIR$/server/api/server.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="336">
-          <caret line="40" column="13" lean-forward="true" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+          <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
           </folding>
@@ -622,8 +620,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/api/controllers/tracker-controller.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="85" column="31" selection-start-line="85" selection-start-column="31" selection-end-line="85" selection-end-column="31" />
+        <state relative-caret-position="255">
+          <caret line="87" column="37" selection-start-line="87" selection-start-column="37" selection-end-line="87" selection-end-column="37" />
           <folding>
             <element signature="e#0#44#0" expanded="true" />
           </folding>

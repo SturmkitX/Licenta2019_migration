@@ -203,7 +203,7 @@ void setup()
 void scanNetworks()
 {
     scannedNetworks = manager.scanNetworks();
-    delay(2000);
+    delay(4000);
 }
 
 bool connectWifi()
@@ -561,6 +561,7 @@ void loop()
             serializeJson(info, client);
             noTone(BUZZER_PIN);
             lost = false;
+            configured = false;
 
             // set AP back to hidden
             // status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA_PSK, VIS_TYPE_HIDDEN, false);

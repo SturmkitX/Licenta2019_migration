@@ -117,7 +117,7 @@ public class SettingsSyncActivity extends AppCompatActivity {
 
                 Socket socket = new Socket();
                 selected.bindSocket(socket);
-                socket.connect(new InetSocketAddress("192.168.4.1", 80), 10000);
+                socket.connect(new InetSocketAddress("192.168.4.1", 80), 20000);
                 comm.put("action", "AP_UPDATE");
                 comm.put("id", tracker.getRfId());
 

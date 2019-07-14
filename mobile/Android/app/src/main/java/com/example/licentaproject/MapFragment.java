@@ -223,7 +223,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             SessionData.getActiveTracker().setFillColor(Color.RED);
         }
 
-        SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_CONNECT);
         SessionData.setActiveTracker(circle);
         circle.setFillColor(Color.GREEN);
     }
@@ -316,14 +315,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
                 String currentSsid = manager.getConnectionInfo().getSSID();
                 currentSsid = currentSsid.substring(1, currentSsid.length() - 1);
-                Log.d("NETWORK_SSID_STATE", String.format("%s %s", apName, currentSsid));
-                Log.d("CURRENT_DISCO_STEP", SessionData.getConfigStep().name());
+                Log.d("NETWORK_SSID_STATE", String.format("Objective: %s Current: %s", apName, currentSsid));
                 if (info.isConnected()) {
-                    if (currentSsid.equals(apName) && SessionData.getConfigStep() == SessionData.ConfigStep.ATTEMPT_CONNECT) {
-                        SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_UPDATE);
+                    if (currentSsid.equals(apName)) {
                         Log.d("NETWORK_SSID_RECV", currentSsid);
                         new SocketJob(context).execute();
-                    } else if (SessionData.getConfigStep() == SessionData.ConfigStep.ATTEMPT_UPDATE) {
+                    } else {
                         // check Internet connection
                         try {
                             InetAddress addr = InetAddress.getByName(SessionData.getPingUrl());
@@ -446,7 +443,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         protected void onPostExecute(Map response) {
             if (response != null) {
                 Log.d("POS_QUERY_SERVER", response.toString());
-                SessionData.setConfigStep(SessionData.ConfigStep.IDLE);
                 SessionData.setActiveTracker(null);
                 if (response.get("star") != null) {
                     Toast.makeText(getContext(), "Congratulations! +1 star", Toast.LENGTH_SHORT).show();
