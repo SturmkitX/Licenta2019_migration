@@ -207,16 +207,21 @@ export class HistoryController{
                             console.log(err);
                             res.status(500).send(err);
                         } else {
+                            // @ts-ignore
+                            const user: any = req.user;
+                            console.log('User to recompense: ');
+                            console.log(user);
+
+                            if (user) {
+                                // @ts-ignore
+                                entry.star = true;
+                            }
                             res.status(200).json(entry);
 
                             // if the request is made by an authorized user,
                             // then it is part of a community check
                             Tracker.findOneAndUpdate({_id: interm.trackerId}, {lost: false}).exec();
 
-                            // @ts-ignore
-                            const user: any = req.user;
-                            console.log('User to recompense: ');
-                            console.log(user);
                             if (user) {
                                 new FindLog({userId: user.id, trackerId: interm.trackerId}).save();
                                 User.findOneAndUpdate({_id: user.id}, {$inc: {stars: 1}}).exec();

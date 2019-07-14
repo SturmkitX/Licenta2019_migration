@@ -38,10 +38,10 @@ You received a star for your efforts! Climb to the top of the leaderboards.`;
 
     public sendEmail() {
         let emailData = {
-            from: 'Tracker Administration <admin@samples.mailgun.org>',
+            from: `Tracker Administration <bogdan@${this.DOMAIN}>`,
             subject: 'Tracker notification',
             to: '',
-            message: ''
+            html: ''
         };
 
         Email.find().populate('user').exec((err, emails) => {
@@ -55,7 +55,7 @@ You received a star for your efforts! Climb to the top of the leaderboards.`;
                     emailData.to = email.user.email;
 
                     // @ts-ignore
-                    emailData.message = email.message;
+                    emailData.html = email.message;
                     this.mailService.messages().send(emailData, (err, body) => {
                         console.log(body);
                     });

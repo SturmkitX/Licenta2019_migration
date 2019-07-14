@@ -448,6 +448,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 Log.d("POS_QUERY_SERVER", response.toString());
                 SessionData.setConfigStep(SessionData.ConfigStep.IDLE);
                 SessionData.setActiveTracker(null);
+                if (response.get("star") != null) {
+                    Toast.makeText(getContext(), "Congratulations! +1 star", Toast.LENGTH_SHORT).show();
+                }
+
 
                 new LostTrackerTask(mMap, lostTrackerContext).execute();
             }

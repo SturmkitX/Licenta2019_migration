@@ -15,6 +15,8 @@ import java.util.List;
 
 public class SyncUtil {
 
+    private static String oldNetBssid;
+
     private SyncUtil() {
 
     }
@@ -133,6 +135,8 @@ public class SyncUtil {
             Toast.makeText(context, "WiFi is not / could not be enabled!", Toast.LENGTH_LONG).show();
         }
 
+        oldNetBssid = manager.getConnectionInfo().getBSSID();
+
         // see the status of all configured networks
         manager.disconnect();
         List<WifiConfiguration> confList = manager.getConfiguredNetworks();
@@ -187,5 +191,18 @@ public class SyncUtil {
         manager.reconnect();
 
         return true;
+    }
+
+    public static boolean connectOldNetwork(Context context) {
+        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        for (WifiConfiguration conf : manager.getConfiguredNetworks()) {
+            if (conf.BSSID.equals(oldNetBssid)) {
+                manager.enableNetwork(conf.networkId, true);
+                manager.reconnect();
+                return true;
+            }
+        }
+
+        return false;
     }
 }

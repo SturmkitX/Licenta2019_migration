@@ -22,6 +22,7 @@ import com.example.licentaproject.models.Tracker;
 import com.example.licentaproject.models.User;
 import com.example.licentaproject.utils.HttpRequestUtil;
 import com.example.licentaproject.utils.SessionData;
+import com.example.licentaproject.utils.SyncUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -192,7 +193,7 @@ public class NavActivity extends AppCompatActivity {
             // send the updated values
             SessionData.setConfigStep(SessionData.ConfigStep.ATTEMPT_UPDATE);
             SessionData.getFoundPool().add(toSend);
-            manager.reconnect();
+//            manager.reconnect();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
