@@ -174,7 +174,7 @@ public class NavActivity extends AppCompatActivity {
         }
 
         @SuppressLint("MissingPermission") Location coarseLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (coarseLocation == null) {
+        if (coarseLocation != null) {
             Map<String, Object> coarseGpsList = new HashMap<>();
             coarseGpsList.put("source", "COARSE");
             coarseGpsList.put("latitude", coarseLocation.getLatitude());

@@ -16,10 +16,11 @@ SoftwareSerial Serial2(3, 4);
 #define MAX_UPDATE_TIMEOUT 60000       // should be increased, but a low value is needed for testing
 #define AUTO_UPDATE_INTERVAL 30000
 #define SCAN_INTERVAL 15000
+#define PUBLIC_SCAN_INTERVAL 120000
 
 #define BUZZER_PIN 8
 
-#define SERVER_ADDRESS "192.168.0.105"
+#define SERVER_ADDRESS "192.168.1.102"
 #define SERVER_PORT 3000
 
 typedef struct
@@ -31,7 +32,8 @@ typedef struct
 char ssid[32] = "";
 char pass[32] = "";
 int status = WL_IDLE_STATUS; // the Wifi radio's status
-byte rfId[] = {4, -118, 76, 66, -20, 76, -128};
+// byte rfId[] = {4, -118, 76, 66, -20, 76, -128};
+byte rfId[] = {4, -67, 76, 66, -20, 76, -128};
 byte rfIdSize = 7;
 bool lost = false;
 bool configured = false;
@@ -208,20 +210,11 @@ void scanNetworks()
 
 bool connectWifi()
 {
+    Serial.println("Scanning for networks...");
     scanNetworks();
 
-    // list the found networks
-    // for (int i=0; i < number; i++)
-    // {
-    //     Serial.println(espDrv.getSSIDNetworks(i));
-    // }
-
     Serial.println("Number of scanned networks: " + String(scannedNetworks));
-    if (apInfoSize == 0)
-    {
-        // skip to open point connection
-        goto openConnection;
-    }
+    if (apInfoSize == 0) return false;
 
     // 1. search for a predefined AP
     for (int i=0; i < scannedNetworks; i++)
@@ -247,28 +240,16 @@ bool connectWifi()
                     String statusLog = "Access Point IP is: ";
                     statusLog += addrStr;
                     Serial.println(statusLog);
-                    // check if the AP has Internet connection
-                    if (espDrv.ping("google.com"))
-                    {
-                        Serial.println("Successfully pinged Google!");
-                        return true;
-                    }
-                    else
-                    {
-                        String status = "Connected to AP ";
-                        status += apInfo[j].ssid;
-                        status += ", but no Internet connection";
-                        Serial.println(status);
-                        manager.disconnect();
-                    }
-                    
                 }
             }
         }        
     }
 
-    // we will reach this point in case there is no predefined AP we can connect to
-    openConnection:
+    return false;
+}
+
+bool connectWifiPublic()
+{
     Serial.println("Searching for an open connection:");
     for (int i=0; i < scannedNetworks; i++)
     {
@@ -292,7 +273,7 @@ bool connectWifi()
                     break;
                 }
             }
-            if (index == MAX_BAN_SIZE) continue;
+            // if (index == MAX_BAN_SIZE) continue;
             
             int status = manager.begin(foundSsid, "");
             if (status == WL_CONNECTED)
@@ -383,6 +364,13 @@ void loop()
         lastScan = millis();
     }
 
+    if (millis() - lastScan >= PUBLIC_SCAN_INTERVAL)
+    {
+        if (espDrv.getConnectionStatus() != WL_CONNECTED)
+            wifiConnected = connectWifiPublic();
+        lastScan = millis();
+    }
+
     while (Serial2.available() > 0)
     {
         nmeaRead++;
@@ -397,6 +385,7 @@ void loop()
     {
         if (espDrv.getConnectionStatus() == WL_CONNECTED)
         {
+            wifiConnected = true;
             WiFiEspClient client;
             StaticJsonDocument<400> doc;
             prepareJSON(doc);
@@ -419,9 +408,12 @@ void loop()
                 serializeJson(doc, client);
                 client.print("\r\n");
 
-                delay(2000);
+                delay(4000);
                 client.stop();
                 lastUpdate = millis();
+
+                lost = false;
+                noTone(BUZZER_PIN);
             }
             else
             {
@@ -429,6 +421,11 @@ void loop()
                 Serial.println(client.status());
             }
         }
+        else
+        {
+            wifiConnected = false;
+        }
+        
 
         autoLastUpdate = millis();
     }
@@ -436,7 +433,7 @@ void loop()
     if (configured && millis() - lastUpdate >= MAX_UPDATE_TIMEOUT && !lost)
     {
         lost = true;
-        tone(BUZZER_PIN, 1000);
+        tone(BUZZER_PIN, 700);
         Serial.println("The AP is now lost and visible");
 
         // set AP as visible
@@ -570,7 +567,7 @@ void loop()
 
     endProcessing:
         // give the web browser time to receive the data
-        delay(10);
+        delay(1000);
 
         // close the connection
         client.stop();

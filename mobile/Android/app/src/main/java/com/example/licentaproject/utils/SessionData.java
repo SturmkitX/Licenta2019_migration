@@ -10,8 +10,8 @@ import java.util.List;
 
 public class SessionData {
 
-    private static final String serverUrl = "192.168.0.105:3000";
-    private static final String pingUrl = "192.168.0.105";
+    private static final String serverUrl = "192.168.1.102:3000";
+    private static final String pingUrl = "192.168.1.102";
     private static String token = null;
     private static User user = null;
     private static Circle activeTracker = null;    // used for map discovery

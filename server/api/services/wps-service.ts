@@ -20,7 +20,12 @@ export class WpsService {
         request.send(JSON.stringify({wifiAccessPoints: rawData}));
 
         console.log(`Response: ${request.responseText}`);
-        const position: DecodedPosition = JSON.parse(request.responseText);
+        let position: DecodedPosition;
+        try {
+            position = JSON.parse(request.responseText);
+        } catch {
+            position = null;
+        }
         return position;
     }
 }

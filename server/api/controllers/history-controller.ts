@@ -85,14 +85,16 @@ export class HistoryController{
 
                 // @ts-ignore
                 const lostMethod = tracker.lost ? 'WPS + GPS' : method;
-                // const interm : HistoryInterm = this.prepareHistory(req.body.positions, trackerId, lostMethod);
-                const interm: HistoryInterm = {
-                    trackerId: trackerId,
-                    lat: 46.7561,
-                    lng: 23.5909,
-                    source: 'WPS + GPS',
-                    range: 26.61
-                };
+                let interm : HistoryInterm = this.prepareHistory(req.body.positions, trackerId, lostMethod);
+                if (!interm) {
+                    interm = {
+                        trackerId: trackerId,
+                        lat: 46.7561,
+                        lng: 23.5909,
+                        source: 'WPS + GPS',
+                        range: 26.61
+                    };
+                }
                 console.log('Interm:');
                 console.log(interm);
                 this.saveHistoryInterm(interm, req, res);
